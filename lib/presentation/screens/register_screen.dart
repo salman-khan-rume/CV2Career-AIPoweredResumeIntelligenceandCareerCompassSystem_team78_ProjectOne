@@ -50,7 +50,10 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
       next.when(
         data: (_) {
           if (ref.read(isLoggedInProvider)) {
-            context.go(AppRoutes.home);
+            ref.read(guestModeProvider.notifier).setGuest(false);
+            context.go(AppRoutes.welcomeUser);
+          } else {
+            context.go(AppRoutes.confirmEmail);
           }
         },
         loading: () {},

@@ -13,7 +13,7 @@ class AppStrings {
   // Onboarding
   static const String onboarding1Title = 'Upload Your Resume';
   static const String onboarding1Body =
-      'Upload your resume in PDF, DOC, or TXT format and let AI do the heavy lifting.';
+      'Upload your resume in PDF, DOCX, or TXT format and let AI do the heavy lifting.';
   static const String onboarding2Title = 'Get AI Insights';
   static const String onboarding2Body =
       'Receive your ATS score, quality analysis, and actionable suggestions instantly.';
@@ -43,7 +43,8 @@ class AppStrings {
   static const String signUpLink = 'Sign Up';
   static const String signInLink = 'Sign In';
   static const String forgotPasswordLink = 'Forgot Password?';
-  static const String resetEmailSent = 'Password reset email sent. Check your inbox.';
+  static const String resetEmailSent =
+      'Password reset email sent. Check your inbox.';
 
   // Home
   static const String homeGreetingGuest = 'Hello, Guest!';
@@ -53,20 +54,25 @@ class AppStrings {
   static const String careerCompassCard = 'Career Compass';
   static const String careerCompassCardSub = 'Find your best-fit path';
   static const String recentAnalyses = 'Recent Analyses';
-  static const String noAnalysesYet = 'No analyses yet. Upload your first resume!';
+  static const String noAnalysesYet =
+      'No analyses yet. Upload your first resume!';
   static const String viewAll = 'View All';
   static const String guestBannerTitle = 'Sign in to save your progress';
-  static const String guestBannerSub = 'Your analyses will be saved for future reference.';
+  static const String guestBannerSub =
+      'Your analyses will be saved for future reference.';
   static const String signInNow = 'Sign In Now';
 
   // Upload
   static const String uploadTitle = 'Upload Resume';
-  static const String uploadSubtitle = 'Supported formats: PDF, DOC, DOCX, TXT (max 5 MB)';
+  static const String uploadSubtitle =
+      'Supported formats: PDF, DOCX, TXT (max 5 MB)';
   static const String uploadDropArea = 'Tap to select your resume file';
   static const String uploadButton = 'Analyse Resume';
   static const String uploadFileSelected = 'File selected';
-  static const String uploadFileSizeError = 'File exceeds 5 MB limit. Please choose a smaller file.';
-  static const String uploadFormatError = 'Unsupported format. Use PDF, DOC, DOCX, or TXT.';
+  static const String uploadFileSizeError =
+      'File exceeds 5 MB limit. Please choose a smaller file.';
+  static const String uploadFormatError =
+      'Unsupported format. Use PDF, DOCX, or TXT.';
   static const String uploading = 'Uploading...';
   static const String parsing = 'Parsing resume...';
   static const String analysing = 'Analysing with AI...';
@@ -89,7 +95,8 @@ class AppStrings {
   static const String careerCompassTitle = 'Career Compass';
   static const String careerCompassIntro =
       'Answer a few questions so we can find your best-fit career domains.';
-  static const String careerCompassAnalysing = 'Finding your best career matches...';
+  static const String careerCompassAnalysing =
+      'Finding your best career matches...';
   static const String careerCompassResultTitle = 'Your Career Matches';
   static const String matchPercent = 'match';
   static const String requiredSkills = 'Required Skills';
@@ -117,6 +124,11 @@ class AppStrings {
 
   // Profile
   static const String profileTitle = 'Profile';
+  static const String editProfile = 'Edit Profile';
+  static const String editProfileTitle = 'Edit Your Profile';
+  static const String fullNameHint = 'Enter your full name';
+  static const String profileUpdatedSuccess = 'Profile updated successfully';
+  static const String profileUpdateError = 'Failed to update profile';
   static const String signOut = 'Sign Out';
   static const String signOutConfirm = 'Are you sure you want to sign out?';
   static const String cancel = 'Cancel';
@@ -134,11 +146,14 @@ class AppStrings {
 
   // Errors
   static const String errorGeneric = 'Something went wrong. Please try again.';
-  static const String errorNoInternet = 'No internet connection. Please check your network.';
+  static const String errorNoInternet =
+      'No internet connection. Please check your network.';
   static const String errorTimeout = 'Request timed out. Retrying...';
-  static const String errorAiUnavailable = 'AI service is temporarily unavailable.';
+  static const String errorAiUnavailable =
+      'AI service is temporarily unavailable.';
   static const String errorInvalidEmail = 'Please enter a valid email address.';
-  static const String errorPasswordTooShort = 'Password must be at least 8 characters.';
+  static const String errorPasswordTooShort =
+      'Password must be at least 8 characters.';
   static const String errorPasswordMismatch = 'Passwords do not match.';
   static const String errorFieldRequired = 'This field is required.';
   static const String retry = 'Retry';

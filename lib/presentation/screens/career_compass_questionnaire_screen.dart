@@ -294,7 +294,7 @@ class _QuestionPage extends StatelessWidget {
             child: Row(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                const Icon(Icons.lightbulb_outline,
+                Icon(Icons.lightbulb_outline,
                     size: 16, color: AppColors.primary),
                 const SizedBox(width: AppDimens.sp8),
                 Expanded(
@@ -377,7 +377,7 @@ class _BottomNav extends StatelessWidget {
         AppDimens.paddingH,
         AppDimens.sp20,
       ),
-      decoration: const BoxDecoration(
+      decoration: BoxDecoration(
         color: AppColors.card,
         border: Border(top: BorderSide(color: AppColors.border)),
       ),

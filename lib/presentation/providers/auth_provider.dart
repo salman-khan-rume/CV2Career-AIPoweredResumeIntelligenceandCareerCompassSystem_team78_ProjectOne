@@ -18,9 +18,25 @@ final isLoggedInProvider = Provider<bool>((ref) {
   return authState.value?.session != null;
 });
 
+// Manages guest mode state explicitly
+class GuestModeNotifier extends Notifier<bool> {
+  @override
+  bool build() => false;
+
+  void setGuest(bool value) {
+    state = value;
+  }
+}
+
+final guestModeProvider = NotifierProvider<GuestModeNotifier, bool>(
+  GuestModeNotifier.new,
+);
+
 // Returns true if the user is in guest mode.
 final isGuestProvider = Provider<bool>((ref) {
-  return ref.read(supabaseServiceProvider).isGuest;
+  final isLoggedIn = ref.watch(isLoggedInProvider);
+  if (isLoggedIn) return false;
+  return ref.watch(guestModeProvider);
 });
 
 // Provides the current user's profile data. Null for guests.
@@ -44,12 +60,17 @@ class AuthNotifier extends Notifier<AsyncValue<void>> {
     required String fullName,
   }) async {
     state = const AsyncValue.loading();
-    state =
-        await AsyncValue.guard(() => ref.read(supabaseServiceProvider).register(
-              email: email,
-              password: password,
-              displayName: fullName,
-            ));
+    state = await AsyncValue.guard(() async {
+      await ref.read(supabaseServiceProvider).register(
+            email: email,
+            password: password,
+            displayName: fullName,
+          );
+      // Create profile row after successful registration
+      await ref.read(supabaseServiceProvider).createProfile(
+            displayName: fullName,
+          );
+    });
   }
 
   // Signs in with email and password.

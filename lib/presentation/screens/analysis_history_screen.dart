@@ -46,7 +46,7 @@ class AnalysisHistoryScreen extends ConsumerWidget {
           final history = ref.watch(analysisHistoryProvider);
 
           return history.when(
-            loading: () => const Center(
+            loading: () => Center(
               child: CircularProgressIndicator(color: AppColors.primary),
             ),
             error: (e, _) => ErrorStateWidget(
@@ -125,7 +125,7 @@ class _ScoreTrendChart extends StatelessWidget {
                   show: true,
                   drawVerticalLine: false,
                   horizontalInterval: 25,
-                  getDrawingHorizontalLine: (_) => const FlLine(
+                  getDrawingHorizontalLine: (_) => FlLine(
                     color: AppColors.border,
                     strokeWidth: 1,
                   ),
@@ -138,7 +138,7 @@ class _ScoreTrendChart extends StatelessWidget {
                       interval: 25,
                       getTitlesWidget: (v, _) => Text(
                         '${v.toInt()}',
-                        style: const TextStyle(
+                        style: TextStyle(
                             fontSize: 10, color: AppColors.textSecondary),
                       ),
                     ),
@@ -227,7 +227,7 @@ class _HistoryCard extends StatelessWidget {
               ],
             ),
           ),
-          const Icon(Icons.chevron_right, color: AppColors.textSecondary),
+          Icon(Icons.chevron_right, color: AppColors.textSecondary),
         ],
       ),
     )

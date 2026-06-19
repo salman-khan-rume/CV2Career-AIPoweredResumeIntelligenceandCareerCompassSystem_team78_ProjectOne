@@ -1,5 +1,5 @@
 import 'dart:io';
-import 'dart:typed_data'; // add this line
+import 'dart:typed_data';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:uuid/uuid.dart';
 import '../../core/constants/app_constants.dart';
@@ -58,25 +58,94 @@ class SupabaseService {
 
   // ── PROFILE ─────────────────────────────────────────────────────────────
 
+  /// Create a new profile row for a user (call after registration).
+  /// Sets up initial email and display name in profiles table.
+  Future<void> createProfile({
+    required String displayName,
+  }) async {
+    if (isGuest) return;
+    if (currentUser == null) throw Exception('No authenticated user');
+
+    try {
+      await _client.from('profiles').insert({
+        'id': currentUser!.id,
+        'email': currentUser!.email,
+        'display_name': displayName,
+        'created_at': DateTime.now().toIso8601String(),
+        'updated_at': DateTime.now().toIso8601String(),
+      });
+    } catch (e) {
+      throw Exception('Failed to create profile: $e');
+    }
+  }
+
   /// Fetch the logged-in user's profile row.
+  /// Merges auth email + profile table data to avoid null fields.
+  /// Returns null if no user logged in.
+  /// Throws exception if fetch fails.
   Future<Map<String, dynamic>?> getProfile() async {
     if (isGuest) return null;
-    final response = await _client
-        .from('profiles')
-        .select()
-        .eq('id', currentUser!.id)
-        .maybeSingle();
-    return response;
+    if (currentUser == null) return null;
+
+    try {
+      final response = await _client
+          .from('profiles')
+          .select()
+          .eq('id', currentUser!.id)
+          .maybeSingle();
+
+      // Merge auth email + profile data so model always has required fields.
+      if (response != null) {
+        return {
+          ...response,
+          'email': currentUser!.email,
+          'id': currentUser!.id,
+        };
+      }
+
+      // Profile row doesn't exist yet; return minimal auth-based profile.
+      return {
+        'id': currentUser!.id,
+        'email': currentUser!.email,
+        'display_name': null,
+        'created_at': DateTime.now().toIso8601String(),
+        'total_analyses': 0,
+      };
+    } catch (e) {
+      throw Exception('Failed to fetch profile: $e');
+    }
   }
 
   /// Update display name or avatar URL in the profile table.
+  /// Creates profile if it doesn't exist.
   Future<void> updateProfile({String? displayName, String? avatarUrl}) async {
     if (isGuest) return;
-    await _client.from('profiles').update({
-      if (displayName != null) 'display_name': displayName,
-      if (avatarUrl != null) 'avatar_url': avatarUrl,
-      'updated_at': DateTime.now().toIso8601String(),
-    }).eq('id', currentUser!.id);
+    if (currentUser == null) throw Exception('No authenticated user');
+
+    try {
+      // Try update first
+      final result = await _client.from('profiles').update({
+        if (displayName != null) 'display_name': displayName,
+        if (avatarUrl != null) 'avatar_url': avatarUrl,
+        'updated_at': DateTime.now().toIso8601String(),
+      }).eq('id', currentUser!.id);
+
+      // If no rows updated, profile doesn't exist - create it
+      if (result == null || (result is List && result.isEmpty)) {
+        await createProfile(
+          displayName: displayName ?? 'User',
+        );
+      }
+    } catch (e) {
+      // If update fails, try to create profile
+      try {
+        await createProfile(
+          displayName: displayName ?? 'User',
+        );
+      } catch (_) {
+        throw Exception('Failed to update profile: $e');
+      }
+    }
   }
 
   // ── STORAGE ─────────────────────────────────────────────────────────────

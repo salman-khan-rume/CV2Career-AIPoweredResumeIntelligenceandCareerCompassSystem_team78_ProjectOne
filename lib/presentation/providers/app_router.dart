@@ -21,6 +21,8 @@ import '../screens/career_domain_detail_screen.dart';
 import '../screens/skill_gap_screen.dart';
 import '../screens/analysis_history_screen.dart';
 import '../screens/profile_screen.dart';
+import '../screens/confirm_email_screen.dart';
+import '../screens/welcome_user_screen.dart';
 import '../widgets/main_shell.dart';
 
 // GoRouter provider - watches auth state to redirect unauthenticated users.
@@ -31,11 +33,24 @@ final routerProvider = Provider<GoRouter>((ref) {
     initialLocation: AppRoutes.splash,
     refreshListenable: RouterRefreshNotifier(ref),
     redirect: (context, state) {
-      // Protected routes require authentication (not just logged-in - guest is also allowed).
-      // Only /history requires login (per SRS FR-7.3).
-      final isHistory = state.matchedLocation == AppRoutes.history;
       final isLoggedIn = authState.value?.session != null;
+      final isGuestMode = ref.read(guestModeProvider);
 
+      // List of public routes that don't require any login/guest mode checks
+      final isPublicRoute = state.matchedLocation == AppRoutes.welcome ||
+          state.matchedLocation == AppRoutes.login ||
+          state.matchedLocation == AppRoutes.register ||
+          state.matchedLocation == AppRoutes.forgotPassword ||
+          state.matchedLocation == AppRoutes.splash ||
+          state.matchedLocation == AppRoutes.onboarding ||
+          state.matchedLocation == AppRoutes.confirmEmail;
+
+      if (!isLoggedIn && !isGuestMode && !isPublicRoute) {
+        return AppRoutes.welcome;
+      }
+
+      // Only /history requires login (guests not allowed)
+      final isHistory = state.matchedLocation == AppRoutes.history;
       if (isHistory && !isLoggedIn) {
         return AppRoutes.welcome;
       }
@@ -76,6 +91,18 @@ final routerProvider = Provider<GoRouter>((ref) {
       GoRoute(
         path: AppRoutes.forgotPassword,
         builder: (context, state) => const ForgotPasswordScreen(),
+      ),
+
+      // Confirm Email
+      GoRoute(
+        path: AppRoutes.confirmEmail,
+        builder: (context, state) => const ConfirmEmailScreen(),
+      ),
+
+      // Welcome User
+      GoRoute(
+        path: AppRoutes.welcomeUser,
+        builder: (context, state) => const WelcomeUserScreen(),
       ),
 
       // Main shell wraps screens with persistent bottom nav (Screens 7, 11, 16, 17)
@@ -171,9 +198,10 @@ final routerProvider = Provider<GoRouter>((ref) {
   );
 });
 
-// Notifier that triggers GoRouter to re-evaluate redirects when auth state changes.
+// Notifier that triggers GoRouter to re-evaluate redirects when auth state or guest mode changes.
 class RouterRefreshNotifier extends ChangeNotifier {
   RouterRefreshNotifier(Ref ref) {
     ref.listen(authStateProvider, (_, __) => notifyListeners());
+    ref.listen(guestModeProvider, (_, __) => notifyListeners());
   }
 }

@@ -27,7 +27,7 @@ class LoadingOverlay extends StatelessWidget {
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
-              const CircularProgressIndicator(
+              CircularProgressIndicator(
                 color: AppColors.primary,
                 strokeWidth: 3,
               ),
@@ -64,7 +64,7 @@ class ErrorStateWidget extends StatelessWidget {
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            const Icon(Icons.error_outline, color: AppColors.danger, size: 48),
+            Icon(Icons.error_outline, color: AppColors.danger, size: 48),
             const SizedBox(height: 16),
             Text(
               message,

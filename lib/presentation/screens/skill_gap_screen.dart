@@ -175,12 +175,12 @@ class _StatChip extends StatelessWidget {
 class _StatusLegend extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    return const Row(
+    return Row(
       children: [
         _LegendItem(AppColors.success, AppStrings.skillPresent),
-        SizedBox(width: AppDimens.sp16),
+        const SizedBox(width: AppDimens.sp16),
         _LegendItem(AppColors.warning, AppStrings.skillPartial),
-        SizedBox(width: AppDimens.sp16),
+        const SizedBox(width: AppDimens.sp16),
         _LegendItem(AppColors.danger, AppStrings.skillMissing),
       ],
     );
@@ -305,7 +305,7 @@ class _RoadmapSection extends StatelessWidget {
         children: [
           Row(
             children: [
-              const Icon(Icons.route_outlined, size: 18, color: AppColors.primary),
+              Icon(Icons.route_outlined, size: 18, color: AppColors.primary),
               const SizedBox(width: AppDimens.sp8),
               Text(AppStrings.improvementRoadmap,
                   style: Theme.of(context).textTheme.titleLarge),
@@ -328,14 +328,14 @@ class _RoadmapSection extends StatelessWidget {
                     Container(
                       width: 24,
                       height: 24,
-                      decoration: const BoxDecoration(
+                      decoration: BoxDecoration(
                         color: AppColors.primarySurface,
                         shape: BoxShape.circle,
                       ),
                       child: Center(
                         child: Text(
                           '${e.key + 1}',
-                          style: const TextStyle(
+                          style: TextStyle(
                             fontSize: 11,
                             fontWeight: FontWeight.w700,
                             color: AppColors.primary,
@@ -393,7 +393,7 @@ class _CertSection extends StatelessWidget {
         children: [
           Row(
             children: [
-              const Icon(Icons.workspace_premium_outlined,
+              Icon(Icons.workspace_premium_outlined,
                   size: 18, color: AppColors.warning),
               const SizedBox(width: AppDimens.sp8),
               Text(AppStrings.recommendedCerts,

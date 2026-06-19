@@ -22,14 +22,14 @@ class _OnboardingSlide {
   });
 }
 
-const List<_OnboardingSlide> _slides = [
+final List<_OnboardingSlide> _slides = [
   _OnboardingSlide(
     title: AppStrings.onboarding1Title,
     body: AppStrings.onboarding1Body,
     icon: Icons.upload_file_rounded,
     iconColor: AppColors.primary,
   ),
-  _OnboardingSlide(
+  const _OnboardingSlide(
     title: AppStrings.onboarding2Title,
     body: AppStrings.onboarding2Body,
     icon: Icons.auto_awesome_rounded,

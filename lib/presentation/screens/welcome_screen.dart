@@ -1,18 +1,20 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import '../../core/constants/app_colors.dart';
 import '../../core/constants/app_dimens.dart';
 import '../../core/constants/app_strings.dart';
 import '../providers/app_routes.dart';
+import '../providers/auth_provider.dart';
 
 // Screen 3: Welcome / Auth choice.
 // Presents Login, Register, and Continue as Guest options per SRS 3.1.
-class WelcomeScreen extends StatelessWidget {
+class WelcomeScreen extends ConsumerWidget {
   const WelcomeScreen({super.key});
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     return Scaffold(
       backgroundColor: AppColors.background,
       body: SafeArea(
@@ -31,7 +33,7 @@ class WelcomeScreen extends StatelessWidget {
                   color: AppColors.primarySurface,
                   borderRadius: BorderRadius.circular(20),
                 ),
-                child: const Icon(
+                child: Icon(
                   Icons.work_outline_rounded,
                   size: 40,
                   color: AppColors.primary,
@@ -83,7 +85,10 @@ class WelcomeScreen extends StatelessWidget {
               ).animate().fadeIn(delay: 550.ms),
               const SizedBox(height: AppDimens.sp20),
               TextButton(
-                onPressed: () => context.go(AppRoutes.home),
+                onPressed: () {
+                  ref.read(guestModeProvider.notifier).setGuest(true);
+                  context.go(AppRoutes.home);
+                },
                 child: const Text(AppStrings.continueAsGuest),
               ).animate().fadeIn(delay: 600.ms),
 

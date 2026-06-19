@@ -19,4 +19,6 @@ class AppRoutes {
   static const String skillGap = '/skill-gap';
   static const String history = '/history';
   static const String profile = '/profile';
+  static const String confirmEmail = '/confirm-email';
+  static const String welcomeUser = '/welcome-user';
 }

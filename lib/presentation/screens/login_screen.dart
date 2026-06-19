@@ -47,7 +47,8 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
       next.when(
         data: (_) {
           if (ref.read(isLoggedInProvider)) {
-            context.go(AppRoutes.home);
+            ref.read(guestModeProvider.notifier).setGuest(false);
+            context.go(AppRoutes.welcomeUser);
           }
         },
         loading: () {},

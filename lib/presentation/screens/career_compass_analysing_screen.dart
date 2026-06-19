@@ -98,11 +98,11 @@ class _AnalysingView extends StatelessWidget {
         Container(
           width: 100,
           height: 100,
-          decoration: const BoxDecoration(
+          decoration: BoxDecoration(
             color: AppColors.primarySurface,
             shape: BoxShape.circle,
           ),
-          child: const Icon(Icons.explore_rounded,
+          child: Icon(Icons.explore_rounded,
               size: 52, color: AppColors.primary),
         )
             .animate(onPlay: (c) => c.repeat(reverse: true))
@@ -120,7 +120,7 @@ class _AnalysingView extends StatelessWidget {
               padding: const EdgeInsets.only(bottom: AppDimens.sp12),
               child: Row(
                 children: [
-                  const SizedBox(
+                  SizedBox(
                     width: 20,
                     height: 20,
                     child: CircularProgressIndicator(

@@ -45,8 +45,6 @@ class PdfService {
         return utf8.decode(bytes); // utf8 safer than fromCharCodes
       case 'docx':
         return _extractFromDocxBytes(bytes);
-      case 'doc':
-        return _extractFromDocBytes(); // old binary format - not parseable on web
       default:
         throw Exception('Unsupported file type: $extension');
     }
@@ -101,14 +99,5 @@ class PdfService {
     } catch (e) {
       throw Exception('Failed to read DOCX file: $e');
     }
-  }
-
-  /// Old binary .doc format cannot be parsed on web without native libs.
-  /// Instructs user to convert to .docx or .pdf instead.
-  Future<String> _extractFromDocBytes() async {
-    throw Exception(
-      'Old .doc format is not supported. '
-      'Please resave your file as .docx or .pdf and try again.',
-    );
   }
 }

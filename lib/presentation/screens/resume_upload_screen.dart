@@ -39,7 +39,7 @@ class _ResumeUploadScreenState extends ConsumerState<ResumeUploadScreen> {
   Future<void> _pickFile() async {
     final result = await FilePicker.platform.pickFiles(
       type: FileType.custom,
-      allowedExtensions: ['pdf', 'doc', 'docx', 'txt'],
+      allowedExtensions: ['pdf', 'docx', 'txt'],
       allowMultiple: false,
       withData: true, // REQUIRED: loads bytes for web; harmless on mobile
     );
@@ -202,7 +202,7 @@ class _DropZone extends StatelessWidget {
             ? Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  const Icon(Icons.description_rounded,
+                  Icon(Icons.description_rounded,
                       size: 48, color: AppColors.primary),
                   const SizedBox(height: AppDimens.sp12),
                   Text(
@@ -234,7 +234,7 @@ class _DropZone extends StatelessWidget {
             : Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  const Icon(Icons.upload_file_rounded,
+                  Icon(Icons.upload_file_rounded,
                       size: 48, color: AppColors.textDisabled),
                   const SizedBox(height: AppDimens.sp12),
                   Text(
@@ -268,7 +268,7 @@ class _TipsCard extends StatelessWidget {
         children: [
           Row(
             children: [
-              const Icon(Icons.lightbulb_outline,
+              Icon(Icons.lightbulb_outline,
                   color: AppColors.warning, size: 20),
               const SizedBox(width: AppDimens.sp8),
               Text('Tips for best results',
@@ -281,7 +281,7 @@ class _TipsCard extends StatelessWidget {
                 child: Row(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    const Icon(Icons.check_circle_outline,
+                    Icon(Icons.check_circle_outline,
                         size: 16, color: AppColors.success),
                     const SizedBox(width: AppDimens.sp8),
                     Expanded(

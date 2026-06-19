@@ -105,10 +105,12 @@ class _HomeHeader extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final greeting = AppUtils.timeGreeting();
+
+    // Build user name: Guest > profile displayName > email part > fallback.
     final name = isGuest
         ? 'Guest'
         : profile.when(
-            data: (p) => p?.displayName ?? 'there',
+            data: (p) => p?.nameForGreeting ?? 'there',
             loading: () => '...',
             error: (_, __) => 'there',
           );
@@ -155,7 +157,7 @@ class _GuestBanner extends StatelessWidget {
         color: AppColors.primarySurface,
         child: Row(
           children: [
-            const Icon(Icons.info_outline, color: AppColors.primary, size: 20),
+            Icon(Icons.info_outline, color: AppColors.primary, size: 20),
             const SizedBox(width: AppDimens.sp12),
             Expanded(
               child: Column(
@@ -285,9 +287,9 @@ class _RecentAnalysesList extends ConsumerWidget {
     final history = ref.watch(analysisHistoryProvider);
 
     return history.when(
-      loading: () => const SliverToBoxAdapter(
+      loading: () => SliverToBoxAdapter(
         child: Padding(
-          padding: EdgeInsets.all(AppDimens.paddingH),
+          padding: const EdgeInsets.all(AppDimens.paddingH),
           child: Center(
               child: CircularProgressIndicator(color: AppColors.primary)),
         ),
@@ -373,7 +375,7 @@ class _AnalysisHistoryCard extends StatelessWidget {
               ],
             ),
           ),
-          const Icon(Icons.chevron_right, color: AppColors.textSecondary),
+          Icon(Icons.chevron_right, color: AppColors.textSecondary),
         ],
       ),
     )

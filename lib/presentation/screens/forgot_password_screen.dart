@@ -137,7 +137,7 @@ class _SuccessView extends StatelessWidget {
     return Column(
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
-        const Icon(Icons.mark_email_read_outlined, size: 64, color: AppColors.success),
+        Icon(Icons.mark_email_read_outlined, size: 64, color: AppColors.success),
         const SizedBox(height: AppDimens.sp20),
         Text(
           AppStrings.resetEmailSent,

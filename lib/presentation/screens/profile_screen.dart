@@ -8,18 +8,20 @@ import '../../core/constants/app_strings.dart';
 import '../../core/utils/app_utils.dart';
 import '../providers/auth_provider.dart';
 import '../providers/app_routes.dart';
+import '../providers/theme_provider.dart';
 import '../widgets/app_card.dart';
 import '../widgets/loading_error_widgets.dart';
+import '../widgets/edit_profile_dialog.dart';
 
 // Screen 17: Profile.
-// Shows user info, total analyses count, and sign-out option.
-// Guest users see a sign-in prompt.
+// Shows user info, edit option, total analyses, and sign-out button.
 class ProfileScreen extends ConsumerWidget {
   const ProfileScreen({super.key});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final isGuest = ref.watch(isGuestProvider);
+    final themeMode = ref.watch(themeProvider);
 
     if (isGuest) {
       return Scaffold(
@@ -36,42 +38,72 @@ class ProfileScreen extends ConsumerWidget {
     }
 
     return Scaffold(
-      appBar: AppBar(title: const Text(AppStrings.profileTitle)),
+      appBar: AppBar(
+        title: const Text(AppStrings.profileTitle),
+        actions: [
+          // Logout icon in AppBar
+          IconButton(
+            icon: const Icon(Icons.logout),
+            color: AppColors.danger,
+            onPressed: () => _confirmSignOut(context, ref),
+            tooltip: AppStrings.signOut,
+          ),
+        ],
+      ),
       body: Consumer(
         builder: (context, ref, _) {
           final profile = ref.watch(userProfileProvider);
 
           return profile.when(
-            loading: () => const Center(
+            loading: () => Center(
               child: CircularProgressIndicator(color: AppColors.primary),
             ),
-            error: (e, _) => ErrorStateWidget(message: e.toString()),
+            error: (e, st) {
+              return ErrorStateWidget(
+                message: 'Failed to load profile.\nError: ${e.toString()}',
+                onRetry: () => ref.invalidate(userProfileProvider),
+              );
+            },
             data: (user) {
-              if (user == null) return const SizedBox();
+              if (user == null) {
+                return ErrorStateWidget(
+                  message: 'No profile data available.',
+                  onRetry: () => ref.invalidate(userProfileProvider),
+                );
+              }
 
               return ListView(
                 padding: const EdgeInsets.all(AppDimens.paddingH),
                 children: [
-                  // Avatar + name header
+                  // Avatar + name + edit button header
                   _ProfileHeader(
-                    displayName: user.displayName,
+                    displayName: user.nameForGreeting,
                     email: user.email,
                   ).animate().fadeIn(),
                   const SizedBox(height: AppDimens.sp20),
 
-                  // Stats row
+                  // Stats: Total analyses + Member since
                   _StatsRow(
                     totalAnalyses: user.totalAnalyses,
                     memberSince: AppUtils.formatDate(user.createdAt),
                   ).animate().fadeIn(delay: 100.ms),
                   const SizedBox(height: AppDimens.sp20),
 
-                  // Menu items
+                  // Menu section (History, Theme Toggle, About, Privacy)
                   _MenuSection(items: [
                     _MenuItem(
                       icon: Icons.history_outlined,
                       label: AppStrings.historyTitle,
                       onTap: () => context.go(AppRoutes.history),
+                    ),
+                    _MenuItem(
+                      icon: themeMode == AppThemeMode.light
+                          ? Icons.dark_mode_outlined
+                          : Icons.light_mode_outlined,
+                      label: themeMode == AppThemeMode.light
+                          ? 'Dark Mode'
+                          : 'Light Mode',
+                      onTap: () => ref.read(themeProvider.notifier).toggle(),
                     ),
                     _MenuItem(
                       icon: Icons.info_outline,
@@ -84,9 +116,9 @@ class ProfileScreen extends ConsumerWidget {
                       onTap: () {},
                     ),
                   ]).animate().fadeIn(delay: 150.ms),
-                  const SizedBox(height: AppDimens.sp16),
+                  const SizedBox(height: AppDimens.sp20),
 
-                  // Sign out
+                  // Sign out button (prominent at bottom)
                   _SignOutButton().animate().fadeIn(delay: 200.ms),
                   const SizedBox(height: AppDimens.sp32),
                 ],
@@ -117,9 +149,37 @@ class ProfileScreen extends ConsumerWidget {
       ),
     );
   }
+
+  void _confirmSignOut(BuildContext context, WidgetRef ref) {
+    showDialog(
+      context: context,
+      builder: (_) => AlertDialog(
+        title: const Text(AppStrings.signOut),
+        content: const Text(AppStrings.signOutConfirm),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(context).pop(),
+            child: const Text(AppStrings.cancel),
+          ),
+          TextButton(
+            onPressed: () async {
+              Navigator.of(context).pop();
+              ref.read(guestModeProvider.notifier).setGuest(false);
+              await ref.read(authNotifierProvider.notifier).signOut();
+              if (context.mounted) context.go(AppRoutes.welcome);
+            },
+            child: Text(
+              AppStrings.confirm,
+              style: TextStyle(color: AppColors.danger),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
 }
 
-// Circular avatar + user name and email.
+// Circular avatar + user name and email, with edit button.
 class _ProfileHeader extends StatelessWidget {
   final String displayName;
   final String email;
@@ -131,19 +191,37 @@ class _ProfileHeader extends StatelessWidget {
     return Column(
       children: [
         CircleAvatar(
-          radius: 40,
+          radius: 50,
           backgroundColor: AppColors.primarySurface,
           child: Text(
             displayName.isNotEmpty ? displayName[0].toUpperCase() : '?',
-            style: const TextStyle(
-              fontSize: 32,
+            style: TextStyle(
+              fontSize: 40,
               fontWeight: FontWeight.w700,
               color: AppColors.primary,
             ),
           ),
         ),
         const SizedBox(height: AppDimens.sp12),
-        Text(displayName, style: Theme.of(context).textTheme.headlineSmall),
+        Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Flexible(
+              child: Text(
+                displayName.isEmpty ? 'User' : displayName,
+                style: Theme.of(context).textTheme.headlineSmall,
+                overflow: TextOverflow.ellipsis,
+              ),
+            ),
+            const SizedBox(width: 8),
+            IconButton(
+              icon: const Icon(Icons.edit_outlined, size: 22),
+              color: AppColors.primary,
+              onPressed: () => _showEditDialog(context, displayName),
+              tooltip: AppStrings.editProfile,
+            ),
+          ],
+        ),
         const SizedBox(height: 4),
         Text(
           email,
@@ -151,8 +229,17 @@ class _ProfileHeader extends StatelessWidget {
               .textTheme
               .bodyMedium
               ?.copyWith(color: AppColors.textSecondary),
+          textAlign: TextAlign.center,
         ),
       ],
+    );
+  }
+
+  /// Show edit profile dialog modal.
+  void _showEditDialog(BuildContext context, String currentName) {
+    showDialog(
+      context: context,
+      builder: (_) => EditProfileDialog(currentName: currentName),
     );
   }
 }
@@ -229,7 +316,7 @@ class _MenuSection extends StatelessWidget {
                 leading: Icon(e.value.icon, color: AppColors.primary, size: 22),
                 title: Text(e.value.label,
                     style: Theme.of(context).textTheme.bodyMedium),
-                trailing: const Icon(Icons.chevron_right,
+                trailing: Icon(Icons.chevron_right,
                     color: AppColors.textSecondary, size: 20),
                 onTap: e.value.onTap,
               ),
@@ -254,15 +341,19 @@ class _MenuItem {
 class _SignOutButton extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    return OutlinedButton.icon(
+    return ElevatedButton.icon(
       onPressed: () => _confirmSignOut(context, ref),
-      icon: const Icon(Icons.logout, color: AppColors.danger),
+      icon: const Icon(Icons.logout),
       label: const Text(
         AppStrings.signOut,
-        style: TextStyle(color: AppColors.danger),
       ),
-      style: OutlinedButton.styleFrom(
-        side: const BorderSide(color: AppColors.danger),
+      style: ElevatedButton.styleFrom(
+        backgroundColor: AppColors.danger,
+        foregroundColor: AppColors.textOnPrimary,
+        minimumSize: const Size(double.infinity, 48),
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(AppDimens.radiusButton),
+        ),
       ),
     );
   }
@@ -281,10 +372,11 @@ class _SignOutButton extends ConsumerWidget {
           TextButton(
             onPressed: () async {
               Navigator.of(context).pop();
+              ref.read(guestModeProvider.notifier).setGuest(false);
               await ref.read(authNotifierProvider.notifier).signOut();
               if (context.mounted) context.go(AppRoutes.welcome);
             },
-            child: const Text(
+            child: Text(
               AppStrings.confirm,
               style: TextStyle(color: AppColors.danger),
             ),

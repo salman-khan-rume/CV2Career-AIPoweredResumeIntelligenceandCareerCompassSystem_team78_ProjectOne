@@ -87,7 +87,7 @@ class ResumeAnalysisNotifier extends Notifier<ResumeAnalysisState> {
       return;
     }
 
-    if (!['pdf', 'doc', 'docx', 'txt'].contains(ext)) {
+    if (!['pdf', 'docx', 'txt'].contains(ext)) {
       state = const ResumeAnalysisState(
         phase: AnalysisPhase.error,
         errorMessage: 'Unsupported file type.',

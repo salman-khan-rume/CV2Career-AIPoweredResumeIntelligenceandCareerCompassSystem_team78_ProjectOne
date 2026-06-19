@@ -1,28 +1,32 @@
 // Represents an authenticated user's profile.
-// Populated from Supabase Auth + optional profiles table.
+// Merged from Supabase Auth (email, id, createdAt) + profiles table (displayName, avatar).
 class UserProfile {
-  final String id;           // Supabase auth user UUID
-  final String email;
-  final String? fullName;
+  final String id; // Supabase auth user UUID
+  final String email; // From auth, always present
+  final String? displayName; // From profiles.display_name, nullable
   final DateTime createdAt;
-  final int totalAnalyses;   // Computed from analysis_results table
+  final int totalAnalyses; // Computed from analysis_results table
 
   const UserProfile({
     required this.id,
     required this.email,
-    this.fullName,
+    this.displayName,
     required this.createdAt,
     this.totalAnalyses = 0,
   });
 
-  String get displayName => fullName?.isNotEmpty == true ? fullName! : email.split('@').first;
+  // Returns displayName if set, otherwise first part of email.
+  String get nameForGreeting =>
+      (displayName?.isNotEmpty == true) ? displayName! : email.split('@').first;
 
   factory UserProfile.fromJson(Map<String, dynamic> json) {
     return UserProfile(
-      id: json['id'] as String,
-      email: json['email'] as String,
-      fullName: json['full_name'] as String?,
-      createdAt: DateTime.parse(json['created_at'] as String),
+      id: json['id'] as String? ?? '',
+      email: json['email'] as String? ?? '',
+      displayName: json['display_name'] as String?,
+      createdAt: json['created_at'] != null
+          ? DateTime.parse(json['created_at'] as String)
+          : DateTime.now(),
       totalAnalyses: (json['total_analyses'] as num?)?.toInt() ?? 0,
     );
   }
@@ -30,7 +34,7 @@ class UserProfile {
   Map<String, dynamic> toJson() => {
         'id': id,
         'email': email,
-        'full_name': fullName,
+        'display_name': displayName,
         'created_at': createdAt.toIso8601String(),
         'total_analyses': totalAnalyses,
       };

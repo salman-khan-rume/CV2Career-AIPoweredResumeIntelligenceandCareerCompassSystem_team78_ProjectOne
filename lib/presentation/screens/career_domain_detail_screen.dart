@@ -69,7 +69,7 @@ class CareerDomainDetailScreen extends StatelessWidget {
                                 const EdgeInsets.only(bottom: AppDimens.sp8),
                             child: Row(
                               children: [
-                                const Icon(Icons.star_outline,
+                                Icon(Icons.star_outline,
                                     size: 16, color: AppColors.warning),
                                 const SizedBox(width: AppDimens.sp8),
                                 Expanded(

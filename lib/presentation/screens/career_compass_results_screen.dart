@@ -147,7 +147,7 @@ class _DomainResultCard extends StatelessWidget {
                 ),
               ),
               const SizedBox(width: AppDimens.sp8),
-              const Icon(Icons.chevron_right, color: AppColors.textSecondary),
+              Icon(Icons.chevron_right, color: AppColors.textSecondary),
             ],
           ),
         ],
