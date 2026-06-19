@@ -218,4 +218,109 @@ Rules:
 
     return await _callGroq(prompt);
   }
+
+  // ── 4. DYNAMIC SKILL GAP WITH JOB DESCRIPTION ───────────────────────────
+
+  /// Compare resume skills against a specific Job Description text.
+  Future<Map<String, dynamic>> analyzeSkillGapWithJD({
+    required String resumeText,
+    required String jobDescriptionText,
+  }) async {
+    final prompt = '''
+You are a senior recruiter and technical skills assessor.
+Compare the resume below against the requirements of the provided Job Description.
+Respond ONLY with a valid JSON object. No explanation, no markdown.
+
+Resume:
+"""
+$resumeText
+"""
+
+Job Description:
+"""
+$jobDescriptionText
+"""
+
+Required JSON structure:
+{
+  "acceptance_score": <int 0-100>,
+  "skills_present": [<string>, ...],
+  "skills_partial": [<string>, ...],
+  "skills_missing": [<string>, ...],
+  "roadmap": [
+    {
+      "skill": <string>,
+      "priority": "High"|"Medium"|"Low",
+      "resources": [<string URL or course name>, ...],
+      "certifications": [<string>, ...]
+    }
+  ]
+}
+
+Rules:
+- acceptance_score: how well the resume matches the job description qualifications (0 to 100)
+- skills_present: skills from the job description that are clearly demonstrated in the resume
+- skills_partial: skills from the job description that are mentioned in the resume but need strengthening or more experience
+- skills_missing: key requirements or skills from the job description that are completely absent from the resume
+- roadmap: actionable development plan for the skills listed in skills_partial and skills_missing, sorted by priority (High first)
+- resources: real, named learning resources or online courses (e.g. Coursera, Udemy, LinkedIn Learning, freeCodeCamp)
+''';
+
+    return await _callGroq(prompt);
+  }
+
+  // ── 5. CAREER ROADMAP GENERATOR ──────────────────────────────────────────
+
+  /// Create a step-by-step career path from user target goal and current background.
+  Future<Map<String, dynamic>> generateCareerRoadmap({
+    required String targetRole,
+    required String currentCondition,
+  }) async {
+    final prompt = '''
+You are a professional career coach and AI roadmap planner.
+Create a structured step-by-step career roadmap guiding a user from their current condition to their desired target role.
+For each step/phase, provide actionable milestones, recommended learning topics, and real, clickable resource URLs (e.g. specific courses on Coursera, Udemy, edX, or official documentation, guides, or roadmaps like roadmap.sh, MDN Web Docs, etc.).
+Respond ONLY with a valid JSON object. No explanation, no markdown, just the JSON.
+
+Desired Target Role:
+"""
+$targetRole
+"""
+
+Current Scenario/Condition:
+"""
+$currentCondition
+"""
+
+Required JSON structure:
+{
+  "target_role": "<string>",
+  "current_condition": "<string>",
+  "estimated_timeline": "<string, e.g. '6-12 Months'>",
+  "phases": [
+    {
+      "phase_number": <int>,
+      "title": "<string>",
+      "description": "<string>",
+      "duration": "<string, e.g. 'Months 1-2'>",
+      "milestones": ["<string>", ...],
+      "resources": [
+        {
+          "name": "<string, e.g. 'Coursera: Meta Front-End Developer Professional Certificate'>",
+          "url": "<string URL, must be a real valid clickable URL, e.g. https://www.coursera.org/... or similar>"
+        },
+        ...
+      ]
+    },
+    ...
+  ]
+}
+
+Rules:
+- Provide 3 to 5 realistic, sequential phases.
+- Ensure all resources contain a real, valid URL. Do not use placeholders like "https://example.com". Use actual URLs of education providers, documentation, or relevant sites.
+''';
+
+    return await _callGroq(prompt);
+  }
 }

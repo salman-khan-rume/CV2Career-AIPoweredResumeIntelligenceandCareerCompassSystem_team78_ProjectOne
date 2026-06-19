@@ -86,20 +86,6 @@ class AnalysisResultScreen extends ConsumerWidget {
               icon: const Icon(Icons.explore_rounded),
               label: const Text(AppStrings.viewCareerCompass),
             ).animate().fadeIn(delay: 350.ms),
-            const SizedBox(height: AppDimens.sp12),
-
-            // CTA: Skill Gap (uses first domain from compass or default)
-            OutlinedButton.icon(
-              onPressed: () {
-                context.push(AppRoutes.skillGap, extra: {
-                  'domainKey':
-                      'software_engineering', // default; overridden from compass
-                  'userSkills': result.missingKeywords, // proxy for skills
-                });
-              },
-              icon: const Icon(Icons.analytics_outlined),
-              label: const Text(AppStrings.viewSkillGap),
-            ).animate().fadeIn(delay: 400.ms),
 
             const SizedBox(height: AppDimens.sp32),
           ],

@@ -19,6 +19,9 @@ import '../screens/career_compass_analysing_screen.dart';
 import '../screens/career_compass_results_screen.dart';
 import '../screens/career_domain_detail_screen.dart';
 import '../screens/skill_gap_screen.dart';
+import '../screens/skill_gap_input_screen.dart';
+import '../screens/career_roadmap_input_screen.dart';
+import '../screens/career_roadmap_result_screen.dart';
 import '../screens/analysis_history_screen.dart';
 import '../screens/profile_screen.dart';
 import '../screens/confirm_email_screen.dart';
@@ -143,8 +146,16 @@ final routerProvider = Provider<GoRouter>((ref) {
       GoRoute(
         path: AppRoutes.analysisResult,
         builder: (context, state) {
-          final result = state.extra as AnalysisResult;
-          return AnalysisResultScreen(result: result);
+          final extra = state.extra;
+          if (extra is AnalysisResult) {
+            return AnalysisResultScreen(result: extra);
+          } else if (extra is Map) {
+            return AnalysisResultScreen(result: AnalysisResult.fromJson(Map<String, dynamic>.from(extra)));
+          } else {
+            return const Scaffold(
+              body: Center(child: Text('Invalid state. Please analyze resume again.')),
+            );
+          }
         },
       ),
 
@@ -152,10 +163,11 @@ final routerProvider = Provider<GoRouter>((ref) {
       GoRoute(
         path: AppRoutes.careerCompassAnalysing,
         builder: (context, state) {
-          final data = state.extra as Map<String, dynamic>;
+          final extra = state.extra;
+          final data = extra is Map ? Map<String, dynamic>.from(extra) : <String, dynamic>{};
           return CareerCompassAnalysingScreen(
-            resumeText: data['resumeText'] as String,
-            answers: data['answers'] as List,
+            resumeText: data['resumeText'] as String? ?? '',
+            answers: data['answers'] as List? ?? [],
           );
         },
       ),
@@ -164,8 +176,20 @@ final routerProvider = Provider<GoRouter>((ref) {
       GoRoute(
         path: AppRoutes.careerCompassResults,
         builder: (context, state) {
-          final domains = state.extra as List<CareerDomain>;
-          return CareerCompassResultsScreen(domains: domains);
+          final extra = state.extra;
+          if (extra is List<CareerDomain>) {
+            return CareerCompassResultsScreen(domains: extra);
+          } else if (extra is List) {
+            return CareerCompassResultsScreen(
+              domains: extra
+                  .map((e) => CareerDomain.fromJson(Map<String, dynamic>.from(e as Map)))
+                  .toList(),
+            );
+          } else {
+            return const Scaffold(
+              body: Center(child: Text('Please take the Career Compass questionnaire again.')),
+            );
+          }
         },
       ),
 
@@ -173,8 +197,16 @@ final routerProvider = Provider<GoRouter>((ref) {
       GoRoute(
         path: AppRoutes.careerDomainDetail,
         builder: (context, state) {
-          final domain = state.extra as CareerDomain;
-          return CareerDomainDetailScreen(domain: domain);
+          final extra = state.extra;
+          if (extra is CareerDomain) {
+            return CareerDomainDetailScreen(domain: extra);
+          } else if (extra is Map) {
+            return CareerDomainDetailScreen(domain: CareerDomain.fromJson(Map<String, dynamic>.from(extra)));
+          } else {
+            return const Scaffold(
+              body: Center(child: Text('Domain detail not found.')),
+            );
+          }
         },
       ),
 
@@ -182,11 +214,40 @@ final routerProvider = Provider<GoRouter>((ref) {
       GoRoute(
         path: AppRoutes.skillGap,
         builder: (context, state) {
-          final data = state.extra as Map<String, dynamic>;
+          final extra = state.extra;
+          final data = extra is Map ? Map<String, dynamic>.from(extra) : <String, dynamic>{};
           return SkillGapScreen(
-            domainKey: data['domainKey'] as String,
-            userSkills: List<String>.from(data['userSkills'] as List),
+            domainKey: data['domainKey'] as String?,
+            userSkills: data['userSkills'] != null ? List<String>.from(data['userSkills'] as List) : null,
+            dynamicReport: data['dynamicReport'] is Map ? Map<String, dynamic>.from(data['dynamicReport'] as Map) : null,
           );
+        },
+      ),
+
+      // Skill Gap Input Screen
+      GoRoute(
+        path: AppRoutes.skillGapInput,
+        builder: (context, state) => const SkillGapInputScreen(),
+      ),
+
+      // Career Roadmap Input Screen
+      GoRoute(
+        path: AppRoutes.careerRoadmapInput,
+        builder: (context, state) => const CareerRoadmapInputScreen(),
+      ),
+
+      // Career Roadmap Result Screen
+      GoRoute(
+        path: AppRoutes.careerRoadmapResult,
+        builder: (context, state) {
+          final extra = state.extra;
+          if (extra is Map) {
+            return CareerRoadmapResultScreen(roadmapData: Map<String, dynamic>.from(extra));
+          } else {
+            return const Scaffold(
+              body: Center(child: Text('Invalid roadmap data. Please try again.')),
+            );
+          }
         },
       ),
     ],

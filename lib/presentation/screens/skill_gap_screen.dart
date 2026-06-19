@@ -14,13 +14,15 @@ import '../widgets/skill_tag.dart';
 // Computes and displays skill gaps for a selected career domain
 // using local benchmark data + user's resume skills.
 class SkillGapScreen extends ConsumerStatefulWidget {
-  final String domainKey;
-  final List<String> userSkills;
+  final String? domainKey;
+  final List<String>? userSkills;
+  final Map<String, dynamic>? dynamicReport;
 
   const SkillGapScreen({
     super.key,
-    required this.domainKey,
-    required this.userSkills,
+    this.domainKey,
+    this.userSkills,
+    this.dynamicReport,
   });
 
   @override
@@ -28,21 +30,27 @@ class SkillGapScreen extends ConsumerStatefulWidget {
 }
 
 class _SkillGapScreenState extends ConsumerState<SkillGapScreen> {
-  late final SkillGapReport _report;
+  SkillGapReport? _report;
 
   @override
   void initState() {
     super.initState();
-    // Skill gap computation is synchronous (local benchmark data).
-    _report = SkillGapService().generateReport(
-      domainKey: widget.domainKey,
-      userSkills: widget.userSkills,
-    );
+    if (widget.dynamicReport == null) {
+      // Skill gap computation is synchronous (local benchmark data).
+      _report = SkillGapService().generateReport(
+        domainKey: widget.domainKey ?? '',
+        userSkills: widget.userSkills ?? [],
+      );
+    }
   }
 
   @override
   Widget build(BuildContext context) {
-    final certs = _report.roadmap
+    if (widget.dynamicReport != null) {
+      return _buildDynamicReport(context, widget.dynamicReport!);
+    }
+
+    final certs = _report!.roadmap
         .where((s) => s.certSuggestion != null)
         .map((s) => s.certSuggestion!)
         .toSet()
@@ -58,20 +66,135 @@ class _SkillGapScreenState extends ConsumerState<SkillGapScreen> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            _CompletenessCard(report: _report).animate().fadeIn(),
+            _CompletenessCard(report: _report!).animate().fadeIn(),
             const SizedBox(height: AppDimens.sp20),
             _StatusLegend().animate().fadeIn(delay: 100.ms),
             const SizedBox(height: AppDimens.sp20),
-            _SkillListSection(report: _report).animate().fadeIn(delay: 150.ms),
+            _SkillListSection(report: _report!).animate().fadeIn(delay: 150.ms),
             const SizedBox(height: AppDimens.sp20),
-            if (_report.roadmap.isNotEmpty) ...[
-              _RoadmapSection(roadmap: _report.roadmap)
+            if (_report!.roadmap.isNotEmpty) ...[
+              _RoadmapSection(roadmap: _report!.roadmap)
                   .animate()
                   .fadeIn(delay: 200.ms),
               const SizedBox(height: AppDimens.sp20),
             ],
             if (certs.isNotEmpty)
               _CertSection(certs: certs).animate().fadeIn(delay: 250.ms),
+            const SizedBox(height: AppDimens.sp32),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Color _completenessColor(int pct) {
+    if (pct >= 70) return AppColors.success;
+    if (pct >= 40) return AppColors.warning;
+    return AppColors.danger;
+  }
+
+  Widget _buildDynamicReport(BuildContext context, Map<String, dynamic> data) {
+    final score = data['acceptance_score'] as int? ?? 0;
+    final present = List<String>.from(data['skills_present'] as List? ?? []);
+    final partial = List<String>.from(data['skills_partial'] as List? ?? []);
+    final missing = List<String>.from(data['skills_missing'] as List? ?? []);
+    final roadmap = List<Map<String, dynamic>>.from(
+        (data['roadmap'] as List? ?? []).map((e) => Map<String, dynamic>.from(e as Map)));
+
+    return Scaffold(
+      appBar: AppBar(
+        title: const Text('Job Match Gap Analysis'),
+        leading: BackButton(onPressed: () => Navigator.of(context).pop()),
+      ),
+      body: SingleChildScrollView(
+        padding: const EdgeInsets.all(AppDimens.paddingH),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            // Completeness/Match card
+            AppCard(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text('Qualifications Match',
+                      style: Theme.of(context).textTheme.headlineMedium),
+                  const SizedBox(height: AppDimens.sp16),
+                  Row(
+                    children: [
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              'Resume Match Score',
+                              style: Theme.of(context).textTheme.labelMedium,
+                            ),
+                            const SizedBox(height: AppDimens.sp8),
+                            LinearPercentIndicator(
+                              percent: (score / 100).clamp(0.0, 1.0),
+                              lineHeight: 12,
+                              animation: true,
+                              animationDuration: 900,
+                              backgroundColor: AppColors.border,
+                              progressColor: _completenessColor(score),
+                              barRadius: const Radius.circular(6),
+                              padding: EdgeInsets.zero,
+                            ),
+                          ],
+                        ),
+                      ),
+                      const SizedBox(width: AppDimens.sp16),
+                      Text(
+                        '$score%',
+                        style: Theme.of(context).textTheme.headlineLarge?.copyWith(
+                              color: _completenessColor(score),
+                            ),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: AppDimens.sp12),
+                  Row(
+                    children: [
+                      _StatChip('${present.length} Matched', AppColors.success),
+                      const SizedBox(width: AppDimens.sp8),
+                      _StatChip('${partial.length} Partial', AppColors.warning),
+                      const SizedBox(width: AppDimens.sp8),
+                      _StatChip('${missing.length} Missing', AppColors.danger),
+                    ],
+                  ),
+                ],
+              ),
+            ).animate().fadeIn(),
+            const SizedBox(height: AppDimens.sp20),
+            
+            // Legend
+            _StatusLegend().animate().fadeIn(delay: 100.ms),
+            const SizedBox(height: AppDimens.sp20),
+
+            // Skills breakdown
+            AppCard(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text('Skills Breakdown', style: Theme.of(context).textTheme.titleLarge),
+                  const SizedBox(height: AppDimens.sp16),
+                  if (present.isEmpty && partial.isEmpty && missing.isEmpty)
+                    Text('No skills detected.', style: Theme.of(context).textTheme.bodyMedium)
+                  else ...[
+                    ...present.map((s) => _DynamicSkillRow(skill: s, status: SkillStatus.present)),
+                    ...partial.map((s) => _DynamicSkillRow(skill: s, status: SkillStatus.partial)),
+                    ...missing.map((s) => _DynamicSkillRow(skill: s, status: SkillStatus.missing)),
+                  ],
+                ],
+              ),
+            ).animate().fadeIn(delay: 150.ms),
+            const SizedBox(height: AppDimens.sp20),
+
+            // Improvement roadmap
+            if (roadmap.isNotEmpty) ...[
+              _DynamicRoadmapSection(roadmap: roadmap).animate().fadeIn(delay: 200.ms),
+              const SizedBox(height: AppDimens.sp20),
+            ],
             const SizedBox(height: AppDimens.sp32),
           ],
         ),
@@ -406,6 +529,224 @@ class _CertSection extends StatelessWidget {
             backgroundColor: AppColors.warningSurface,
             textColor: AppColors.warning,
           ),
+        ],
+      ),
+    );
+  }
+}
+
+class _DynamicSkillRow extends StatelessWidget {
+  final String skill;
+  final SkillStatus status;
+
+  const _DynamicSkillRow({required this.skill, required this.status});
+
+  Color get _statusColor {
+    switch (status) {
+      case SkillStatus.present:
+        return AppColors.success;
+      case SkillStatus.partial:
+        return AppColors.warning;
+      case SkillStatus.missing:
+        return AppColors.danger;
+    }
+  }
+
+  IconData get _statusIcon {
+    switch (status) {
+      case SkillStatus.present:
+        return Icons.check_circle_outline;
+      case SkillStatus.partial:
+        return Icons.radio_button_checked;
+      case SkillStatus.missing:
+        return Icons.cancel_outlined;
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.only(bottom: AppDimens.sp12),
+      child: Row(
+        children: [
+          Icon(_statusIcon, size: 20, color: _statusColor),
+          const SizedBox(width: AppDimens.sp12),
+          Expanded(
+            child: Text(
+              skill,
+              style: Theme.of(context).textTheme.bodyMedium,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _DynamicRoadmapSection extends StatelessWidget {
+  final List<Map<String, dynamic>> roadmap;
+  const _DynamicRoadmapSection({required this.roadmap});
+
+  @override
+  Widget build(BuildContext context) {
+    return AppCard(
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              Icon(Icons.route_outlined, size: 18, color: AppColors.primary),
+              const SizedBox(width: AppDimens.sp8),
+              Text('Actionable Roadmap',
+                  style: Theme.of(context).textTheme.titleLarge),
+            ],
+          ),
+          const SizedBox(height: 4),
+          Text(
+            'Recommended learning resources to bridge your skill gap',
+            style: Theme.of(context)
+                .textTheme
+                .bodySmall
+                ?.copyWith(color: AppColors.textSecondary),
+          ),
+          const SizedBox(height: AppDimens.sp16),
+          ...roadmap.asMap().entries.map((e) {
+            final item = e.value;
+            final skillName = item['skill'] as String? ?? 'Unknown';
+            final priority = item['priority'] as String? ?? 'Medium';
+            final resources = List<String>.from(item['resources'] as List? ?? []);
+            final certs = List<String>.from(item['certifications'] as List? ?? []);
+
+            Color priorityColor;
+            switch (priority.toLowerCase()) {
+              case 'high':
+                priorityColor = AppColors.danger;
+                break;
+              case 'low':
+                priorityColor = AppColors.primary;
+                break;
+              default:
+                priorityColor = AppColors.warning;
+            }
+
+            return Padding(
+              padding: const EdgeInsets.only(bottom: AppDimens.sp16),
+              child: Row(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Container(
+                    width: 24,
+                    height: 24,
+                    decoration: BoxDecoration(
+                      color: AppColors.primarySurface,
+                      shape: BoxShape.circle,
+                    ),
+                    child: Center(
+                      child: Text(
+                        '${e.key + 1}',
+                        style: TextStyle(
+                          fontSize: 11,
+                          fontWeight: FontWeight.w700,
+                          color: AppColors.primary,
+                        ),
+                      ),
+                    ),
+                  ),
+                  const SizedBox(width: AppDimens.sp12),
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Row(
+                          children: [
+                            Expanded(
+                              child: Text(
+                                skillName,
+                                style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                                      fontWeight: FontWeight.bold,
+                                    ),
+                              ),
+                            ),
+                            const SizedBox(width: 8),
+                            Container(
+                              padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                              decoration: BoxDecoration(
+                                color: priorityColor.withOpacity(0.12),
+                                borderRadius: BorderRadius.circular(6),
+                              ),
+                              child: Text(
+                                priority,
+                                style: TextStyle(
+                                  fontSize: 10,
+                                  fontWeight: FontWeight.bold,
+                                  color: priorityColor,
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
+                        const SizedBox(height: 6),
+                        if (resources.isNotEmpty) ...[
+                          const SizedBox(height: 4),
+                          Text(
+                            'Learning Resources:',
+                            style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                                  fontWeight: FontWeight.bold,
+                                  color: AppColors.textSecondary,
+                                ),
+                          ),
+                          const SizedBox(height: 2),
+                          ...resources.map((r) => Padding(
+                                padding: const EdgeInsets.only(left: 8, bottom: 2),
+                                child: Row(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Text('• ', style: TextStyle(color: AppColors.primary)),
+                                    Expanded(
+                                      child: Text(
+                                        r,
+                                        style: Theme.of(context).textTheme.bodySmall,
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              )),
+                        ],
+                        if (certs.isNotEmpty) ...[
+                          const SizedBox(height: 6),
+                          Text(
+                            'Recommended Certifications:',
+                            style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                                  fontWeight: FontWeight.bold,
+                                  color: AppColors.textSecondary,
+                                ),
+                          ),
+                          const SizedBox(height: 2),
+                          ...certs.map((c) => Padding(
+                                padding: const EdgeInsets.only(left: 8, bottom: 2),
+                                child: Row(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Text('• ', style: TextStyle(color: AppColors.warning)),
+                                    Expanded(
+                                      child: Text(
+                                        c,
+                                        style: Theme.of(context).textTheme.bodySmall,
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              )),
+                        ],
+                        const SizedBox(height: 8),
+                        Divider(color: AppColors.border.withOpacity(0.5)),
+                      ],
+                    ),
+                  ),
+                ],
+              ),
+            );
+          }),
         ],
       ),
     );

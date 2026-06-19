@@ -17,6 +17,9 @@ class AppRoutes {
   static const String careerCompassResults = '/compass/results';
   static const String careerDomainDetail = '/compass/domain';
   static const String skillGap = '/skill-gap';
+  static const String skillGapInput = '/skill-gap/input';
+  static const String careerRoadmapInput = '/roadmap/input';
+  static const String careerRoadmapResult = '/roadmap/result';
   static const String history = '/history';
   static const String profile = '/profile';
   static const String confirmEmail = '/confirm-email';

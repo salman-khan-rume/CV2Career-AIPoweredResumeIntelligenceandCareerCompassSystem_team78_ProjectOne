@@ -11,6 +11,7 @@ import '../../core/constants/app_strings.dart';
 import '../../core/utils/app_utils.dart';
 import '../providers/app_routes.dart';
 import '../providers/resume_analysis_provider.dart';
+import '../providers/auth_provider.dart';
 import '../widgets/app_card.dart';
 import '../widgets/loading_error_widgets.dart';
 
@@ -104,6 +105,7 @@ class _ResumeUploadScreenState extends ConsumerState<ResumeUploadScreen> {
   Widget build(BuildContext context) {
     ref.listen(resumeAnalysisProvider, (_, next) {
       if (next.phase == AnalysisPhase.done && next.result != null) {
+        ref.invalidate(userProfileProvider);
         context.push(AppRoutes.analysisResult, extra: next.result!);
       }
     });

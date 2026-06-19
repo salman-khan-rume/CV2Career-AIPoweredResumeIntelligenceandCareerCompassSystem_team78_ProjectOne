@@ -26,12 +26,23 @@ class HomeDashboardScreen extends ConsumerWidget {
     final profile = ref.watch(userProfileProvider);
 
     return Scaffold(
-      backgroundColor: AppColors.background,
-      body: SafeArea(
-        child: RefreshIndicator(
-          color: AppColors.primary,
-          onRefresh: () async => ref.invalidate(analysisHistoryProvider),
-          child: CustomScrollView(
+      body: Container(
+        decoration: BoxDecoration(
+          gradient: LinearGradient(
+            begin: Alignment.topCenter,
+            end: Alignment.bottomCenter,
+            colors: [
+              AppColors.background,
+              AppColors.primarySurface.withOpacity(0.3),
+              AppColors.background,
+            ],
+          ),
+        ),
+        child: SafeArea(
+          child: RefreshIndicator(
+            color: AppColors.primary,
+            onRefresh: () async => ref.invalidate(analysisHistoryProvider),
+            child: CustomScrollView(
             slivers: [
               // Greeting header
               SliverToBoxAdapter(
@@ -91,8 +102,9 @@ class HomeDashboardScreen extends ConsumerWidget {
           ),
         ),
       ),
-    );
-  }
+    ),
+  );
+}
 }
 
 // Greeting header with user name and time-based greeting.
@@ -187,7 +199,7 @@ class _GuestBanner extends StatelessWidget {
   }
 }
 
-// Two quick-action cards: Upload Resume and Career Compass.
+// Quick-action cards: Upload Resume, Career Compass, and Check Skill Gap.
 class _QuickActions extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
@@ -198,36 +210,119 @@ class _QuickActions extends StatelessWidget {
         AppDimens.paddingH,
         0,
       ),
-      child: Row(
+      child: Column(
         children: [
-          Expanded(
-            child: _ActionCard(
-              icon: Icons.upload_file_rounded,
-              iconBg: AppColors.primarySurface,
-              iconColor: AppColors.primary,
-              title: AppStrings.uploadResumeCard,
-              subtitle: AppStrings.uploadResumeCardSub,
-              onTap: () => context.push(AppRoutes.upload),
-              delay: 150,
-            ),
+          Row(
+            children: [
+              Expanded(
+                child: _ActionCard(
+                  icon: Icons.upload_file_rounded,
+                  iconBg: AppColors.primarySurface,
+                  iconColor: AppColors.primary,
+                  title: AppStrings.uploadResumeCard,
+                  subtitle: AppStrings.uploadResumeCardSub,
+                  onTap: () => context.push(AppRoutes.upload),
+                  delay: 150,
+                ),
+              ),
+              const SizedBox(width: AppDimens.sp12),
+              Expanded(
+                child: _ActionCard(
+                  icon: Icons.explore_rounded,
+                  iconBg: const Color(0xFFEDE9FE),
+                  iconColor: const Color(0xFF7C3AED),
+                  title: AppStrings.careerCompassCard,
+                  subtitle: AppStrings.careerCompassCardSub,
+                  onTap: () => context.go(AppRoutes.careerCompassQuestionnaire),
+                  delay: 250,
+                ),
+              ),
+            ],
           ),
-          const SizedBox(width: AppDimens.sp12),
-          Expanded(
-            child: _ActionCard(
-              icon: Icons.explore_rounded,
-              iconBg: const Color(0xFFEDE9FE),
-              iconColor: const Color(0xFF7C3AED),
-              title: AppStrings.careerCompassCard,
-              subtitle: AppStrings.careerCompassCardSub,
-              onTap: () => context.go(AppRoutes.careerCompassQuestionnaire),
-              delay: 250,
-            ),
+          const SizedBox(height: AppDimens.sp12),
+          _FullWidthActionCard(
+            icon: Icons.analytics_outlined,
+            iconBg: const Color(0xFFECFDF5),
+            iconColor: const Color(0xFF10B981),
+            title: 'Check Skill Gap',
+            subtitle: 'Compare your CV against any Job Description using AI',
+            onTap: () => context.push(AppRoutes.skillGapInput),
+            delay: 350,
+          ),
+          const SizedBox(height: AppDimens.sp12),
+          _FullWidthActionCard(
+            icon: Icons.map_outlined,
+            iconBg: const Color(0xFFFEF3C7),
+            iconColor: const Color(0xFFD97706),
+            title: 'Career Roadmap',
+            subtitle: 'Generate a personalized step-by-step career path using AI',
+            onTap: () => context.push(AppRoutes.careerRoadmapInput),
+            delay: 450,
           ),
         ],
       ),
     );
   }
 }
+
+class _FullWidthActionCard extends StatelessWidget {
+  final IconData icon;
+  final Color iconBg;
+  final Color iconColor;
+  final String title;
+  final String subtitle;
+  final VoidCallback onTap;
+  final int delay;
+
+  const _FullWidthActionCard({
+    required this.icon,
+    required this.iconBg,
+    required this.iconColor,
+    required this.title,
+    required this.subtitle,
+    required this.onTap,
+    required this.delay,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return AppCard(
+      onTap: onTap,
+      child: Row(
+        children: [
+          Container(
+            width: 44,
+            height: 44,
+            decoration: BoxDecoration(
+              color: iconBg,
+              borderRadius: BorderRadius.circular(AppDimens.radiusSm * 2),
+            ),
+            child: Icon(icon, color: iconColor, size: AppDimens.iconMd),
+          ),
+          const SizedBox(width: AppDimens.sp16),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(title, style: Theme.of(context).textTheme.titleMedium),
+                const SizedBox(height: 2),
+                Text(
+                  subtitle,
+                  style: Theme.of(context).textTheme.bodySmall,
+                ),
+              ],
+            ),
+          ),
+          Icon(Icons.chevron_right, color: AppColors.textSecondary),
+        ],
+      ),
+    )
+        .animate()
+        .fadeIn(delay: Duration(milliseconds: delay))
+        .slideY(begin: 0.1, end: 0);
+  }
+}
+
 
 class _ActionCard extends StatelessWidget {
   final IconData icon;

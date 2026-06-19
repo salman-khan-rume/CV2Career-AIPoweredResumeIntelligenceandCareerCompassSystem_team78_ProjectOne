@@ -94,12 +94,20 @@ class SupabaseService {
           .eq('id', currentUser!.id)
           .maybeSingle();
 
+      // Count analyses dynamically from resume_analyses table
+      final countRes = await _client
+          .from('resume_analyses')
+          .select('id')
+          .eq('user_id', currentUser!.id);
+      final totalAnalyses = countRes.length;
+
       // Merge auth email + profile data so model always has required fields.
       if (response != null) {
         return {
           ...response,
           'email': currentUser!.email,
           'id': currentUser!.id,
+          'total_analyses': totalAnalyses,
         };
       }
 
@@ -108,8 +116,9 @@ class SupabaseService {
         'id': currentUser!.id,
         'email': currentUser!.email,
         'display_name': null,
+        'avatar_url': null,
         'created_at': DateTime.now().toIso8601String(),
-        'total_analyses': 0,
+        'total_analyses': totalAnalyses,
       };
     } catch (e) {
       throw Exception('Failed to fetch profile: $e');
@@ -124,24 +133,23 @@ class SupabaseService {
 
     try {
       // Try update first
-      final result = await _client.from('profiles').update({
+      await _client.from('profiles').update({
         if (displayName != null) 'display_name': displayName,
         if (avatarUrl != null) 'avatar_url': avatarUrl,
         'updated_at': DateTime.now().toIso8601String(),
       }).eq('id', currentUser!.id);
-
-      // If no rows updated, profile doesn't exist - create it
-      if (result == null || (result is List && result.isEmpty)) {
-        await createProfile(
-          displayName: displayName ?? 'User',
-        );
-      }
     } catch (e) {
       // If update fails, try to create profile
       try {
         await createProfile(
           displayName: displayName ?? 'User',
         );
+        // Retry the update after creation
+        await _client.from('profiles').update({
+          if (displayName != null) 'display_name': displayName,
+          if (avatarUrl != null) 'avatar_url': avatarUrl,
+          'updated_at': DateTime.now().toIso8601String(),
+        }).eq('id', currentUser!.id);
       } catch (_) {
         throw Exception('Failed to update profile: $e');
       }
@@ -191,6 +199,27 @@ class SupabaseService {
     return response;
   }
 
+  /// Upload avatar image from bytes and return its public URL.
+  Future<String> uploadAvatarBytes(Uint8List bytes, String extension) async {
+    if (isGuest) throw Exception('Guest users cannot upload files.');
+
+    final fileName = 'avatar_${DateTime.now().millisecondsSinceEpoch}.$extension';
+    final path = '${currentUser!.id}/$fileName';
+
+    await _client.storage
+        .from('avatars')
+        .uploadBinary(
+          path,
+          bytes,
+          fileOptions: FileOptions(
+            contentType: 'image/$extension',
+            upsert: true,
+          ),
+        );
+
+    return _client.storage.from('avatars').getPublicUrl(path);
+  }
+
   // ── RESUME ANALYSES ─────────────────────────────────────────────────────
 
   /// Save a completed resume analysis result to the database.
@@ -233,7 +262,7 @@ class SupabaseService {
     if (isGuest) return [];
     final response = await _client
         .from('resume_analyses')
-        .select('id, file_name, overall_score, ats_score, created_at')
+        .select('id, user_id, file_name, overall_score, ats_score, created_at, suggestions, missing_sections, weak_language, missing_keywords')
         .eq('user_id', currentUser!.id)
         .order('created_at', ascending: false);
     return List<Map<String, dynamic>>.from(response);
@@ -298,5 +327,65 @@ class SupabaseService {
       'skills_missing': skillsMissing,
       'roadmap': roadmap,
     });
+  }
+
+  // ── PRIMARY CV ───────────────────────────────────────────────────────────
+
+  /// Save primary CV: Upload file to storage and update profile record.
+  Future<void> savePrimaryCV({
+    required Uint8List bytes,
+    required String fileName,
+    required String extension,
+    required String extractedText,
+  }) async {
+    if (isGuest) throw Exception('Guest users cannot save a primary CV.');
+    if (currentUser == null) throw Exception('No authenticated user');
+
+    // 1. Upload file to storage
+    final storagePath = await uploadResumeBytes(bytes, fileName, extension);
+
+    // 2. Update profiles table
+    await _client.from('profiles').update({
+      'primary_cv_url': storagePath,
+      'primary_cv_text': extractedText,
+      'primary_cv_name': fileName,
+      'primary_cv_updated_at': DateTime.now().toIso8601String(),
+      'updated_at': DateTime.now().toIso8601String(),
+    }).eq('id', currentUser!.id);
+  }
+
+  /// Delete primary CV from storage and clear profile fields.
+  Future<void> deletePrimaryCV() async {
+    if (isGuest) return;
+    if (currentUser == null) throw Exception('No authenticated user');
+
+    try {
+      // 1. Get current primary CV path
+      final profile = await _client
+          .from('profiles')
+          .select('primary_cv_url')
+          .eq('id', currentUser!.id)
+          .maybeSingle();
+
+      final storagePath = profile?['primary_cv_url'] as String?;
+
+      // 2. Clear profile columns
+      await _client.from('profiles').update({
+        'primary_cv_url': null,
+        'primary_cv_text': null,
+        'primary_cv_name': null,
+        'primary_cv_updated_at': null,
+        'updated_at': DateTime.now().toIso8601String(),
+      }).eq('id', currentUser!.id);
+
+      // 3. Delete from storage if path exists
+      if (storagePath != null && storagePath.isNotEmpty) {
+        await _client.storage
+            .from(AppConstants.resumesBucket)
+            .remove([storagePath]);
+      }
+    } catch (e) {
+      throw Exception('Failed to delete primary CV: $e');
+    }
   }
 }

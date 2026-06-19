@@ -42,7 +42,8 @@ class MyApp extends ConsumerWidget {
       debugShowCheckedModeBanner: false,
       theme: AppTheme.lightTheme,
       darkTheme: AppTheme.darkTheme,
-      themeMode: themeMode == AppThemeMode.light ? ThemeMode.light : ThemeMode.dark,
+      themeMode:
+          themeMode == AppThemeMode.light ? ThemeMode.light : ThemeMode.dark,
       routerConfig: router,
     );
   }

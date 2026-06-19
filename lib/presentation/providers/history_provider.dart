@@ -30,10 +30,15 @@ final analysisHistoryProvider =
             resumeFileName: record['file_name'] as String? ?? 'Resume',
             overallScore: (record['overall_score'] as num?)?.toInt() ?? 0,
             atsScore: (record['ats_score'] as num?)?.toInt() ?? 0,
-            missingSections: [],
-            weakLanguage: [],
-            missingKeywords: [],
-            suggestions: [],
+            missingSections: List<String>.from(record['missing_sections'] as List? ?? []),
+            weakLanguage: List<String>.from(record['weak_language'] as List? ?? []),
+            missingKeywords: List<String>.from(record['missing_keywords'] as List? ?? []),
+            suggestions: (record['suggestions'] as List? ?? [])
+                .map((s) => SuggestionItem.fromJson(Map<String, dynamic>.from(s as Map)))
+                .toList(),
+            createdAt: record['created_at'] != null
+                ? DateTime.tryParse(record['created_at'] as String)
+                : null,
           ))
       .toList();
 });
