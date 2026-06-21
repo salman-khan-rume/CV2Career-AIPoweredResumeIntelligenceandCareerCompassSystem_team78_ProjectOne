@@ -671,7 +671,7 @@ class _DynamicRoadmapSection extends StatelessWidget {
                             Container(
                               padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
                               decoration: BoxDecoration(
-                                color: priorityColor.withOpacity(0.12),
+                                color: priorityColor.withValues(alpha: 0.12),
                                 borderRadius: BorderRadius.circular(6),
                               ),
                               child: Text(
@@ -739,7 +739,7 @@ class _DynamicRoadmapSection extends StatelessWidget {
                               )),
                         ],
                         const SizedBox(height: 8),
-                        Divider(color: AppColors.border.withOpacity(0.5)),
+                        Divider(color: AppColors.border.withValues(alpha: 0.5)),
                       ],
                     ),
                   ),

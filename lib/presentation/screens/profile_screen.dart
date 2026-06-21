@@ -51,7 +51,7 @@ class ProfileScreen extends ConsumerWidget {
             end: Alignment.bottomCenter,
             colors: [
               AppColors.background,
-              AppColors.primarySurface.withOpacity(0.3),
+              AppColors.primarySurface.withValues(alpha: 0.3),
               AppColors.background,
             ],
           ),
@@ -447,7 +447,7 @@ class _SignOutButton extends ConsumerWidget {
         ),
       ),
       style: OutlinedButton.styleFrom(
-        side: BorderSide(color: AppColors.danger.withOpacity(0.4), width: 1.5),
+        side: BorderSide(color: AppColors.danger.withValues(alpha: 0.4), width: 1.5),
         minimumSize: const Size(double.infinity, 48),
         shape: const StadiumBorder(),
       ),
@@ -671,7 +671,7 @@ class _PrimaryCvCardState extends ConsumerState<_PrimaryCvCard> {
                 Container(
                   padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
                   decoration: BoxDecoration(
-                    color: AppColors.success.withOpacity(0.1),
+                    color: AppColors.success.withValues(alpha: 0.1),
                     borderRadius: BorderRadius.circular(12),
                   ),
                   child: Row(
@@ -722,9 +722,9 @@ class _PrimaryCvCardState extends ConsumerState<_PrimaryCvCard> {
             Container(
               padding: const EdgeInsets.all(12),
               decoration: BoxDecoration(
-                color: AppColors.primarySurface.withOpacity(0.4),
+                color: AppColors.primarySurface.withValues(alpha: 0.4),
                 borderRadius: BorderRadius.circular(12),
-                border: Border.all(color: AppColors.primary.withOpacity(0.1)),
+                border: Border.all(color: AppColors.primary.withValues(alpha: 0.1)),
               ),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -734,7 +734,7 @@ class _PrimaryCvCardState extends ConsumerState<_PrimaryCvCard> {
                       Container(
                         padding: const EdgeInsets.all(8),
                         decoration: BoxDecoration(
-                          color: AppColors.primary.withOpacity(0.1),
+                          color: AppColors.primary.withValues(alpha: 0.1),
                           shape: BoxShape.circle,
                         ),
                         child: Icon(Icons.picture_as_pdf_outlined, color: AppColors.primary, size: 24),
@@ -777,7 +777,7 @@ class _PrimaryCvCardState extends ConsumerState<_PrimaryCvCard> {
                           label: const Text('Replace'),
                           style: OutlinedButton.styleFrom(
                             padding: const EdgeInsets.symmetric(vertical: 8),
-                            side: BorderSide(color: AppColors.primary.withOpacity(0.5)),
+                            side: BorderSide(color: AppColors.primary.withValues(alpha: 0.5)),
                           ),
                         ),
                       ),
@@ -792,7 +792,7 @@ class _PrimaryCvCardState extends ConsumerState<_PrimaryCvCard> {
                           ),
                           style: OutlinedButton.styleFrom(
                             padding: const EdgeInsets.symmetric(vertical: 8),
-                            side: BorderSide(color: AppColors.danger.withOpacity(0.5)),
+                            side: BorderSide(color: AppColors.danger.withValues(alpha: 0.5)),
                           ),
                         ),
                       ),

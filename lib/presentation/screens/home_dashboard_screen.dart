@@ -34,7 +34,7 @@ class HomeDashboardScreen extends ConsumerWidget {
             end: Alignment.bottomCenter,
             colors: [
               AppColors.background,
-              AppColors.primarySurface.withOpacity(0.3),
+              AppColors.primarySurface.withValues(alpha: 0.3),
               AppColors.background,
             ],
           ),
@@ -340,7 +340,7 @@ class _GradientActionCard extends StatelessWidget {
           borderRadius: BorderRadius.circular(AppDimens.radiusCard),
           boxShadow: [
             BoxShadow(
-              color: gradientColors.first.withOpacity(0.2),
+              color: gradientColors.first.withValues(alpha: 0.2),
               blurRadius: 10,
               offset: const Offset(0, 4),
             ),
@@ -357,7 +357,7 @@ class _GradientActionCard extends StatelessWidget {
                   width: 70,
                   height: 70,
                   decoration: BoxDecoration(
-                    color: Colors.white.withOpacity(0.08),
+                    color: Colors.white.withValues(alpha: 0.08),
                     shape: BoxShape.circle,
                   ),
                 ),
@@ -392,7 +392,7 @@ class _GradientActionCard extends StatelessWidget {
                         textAlign: TextAlign.center,
                         style: TextStyle(
                           fontSize: 10,
-                          color: Colors.white.withOpacity(0.85),
+                          color: Colors.white.withValues(alpha: 0.85),
                           height: 1.2,
                         ),
                         maxLines: 2,
@@ -473,10 +473,10 @@ class _InfoCardTile extends StatelessWidget {
         decoration: BoxDecoration(
           color: AppColors.card,
           borderRadius: BorderRadius.circular(AppDimens.radiusCard),
-          border: Border.all(color: AppColors.primary.withOpacity(0.12), width: 1.5),
+          border: Border.all(color: AppColors.primary.withValues(alpha: 0.12), width: 1.5),
           boxShadow: [
             BoxShadow(
-              color: AppColors.primary.withOpacity(0.03),
+              color: AppColors.primary.withValues(alpha: 0.03),
               blurRadius: 8,
               offset: const Offset(0, 3),
             ),
@@ -923,10 +923,10 @@ Widget _buildDevItemCard(
     decoration: BoxDecoration(
       color: AppColors.card,
       borderRadius: BorderRadius.circular(AppDimens.radiusCard),
-      border: Border.all(color: AppColors.primary.withOpacity(0.1), width: 1),
+      border: Border.all(color: AppColors.primary.withValues(alpha: 0.1), width: 1),
       boxShadow: [
         BoxShadow(
-          color: AppColors.primary.withOpacity(0.02),
+          color: AppColors.primary.withValues(alpha: 0.02),
           blurRadius: 6,
           offset: const Offset(0, 2),
         ),

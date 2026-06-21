@@ -130,7 +130,7 @@ class _CareerRoadmapInputScreenState extends ConsumerState<CareerRoadmapInputScr
             end: Alignment.bottomCenter,
             colors: [
               AppColors.background,
-              AppColors.primarySurface.withOpacity(0.3),
+              AppColors.primarySurface.withValues(alpha: 0.3),
               AppColors.background,
             ],
           ),
@@ -303,34 +303,38 @@ class _CareerRoadmapInputScreenState extends ConsumerState<CareerRoadmapInputScr
           style: Theme.of(context).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.bold),
         ).animate().fadeIn(delay: 100.ms),
         const SizedBox(height: 8),
-        ..._statusOptions.map((opt) {
-          final isSelected = _currentStatus == opt;
-          return Padding(
-            padding: const EdgeInsets.only(bottom: 10),
-            child: AppCard(
-              onTap: () => setState(() => _currentStatus = opt),
-              color: isSelected ? AppColors.primarySurface : AppColors.card,
-              borderRadius: 12,
-              padding: const EdgeInsets.all(12),
-              child: Row(
-                children: [
-                  Radio<String>(
-                    value: opt,
-                    groupValue: _currentStatus,
-                    onChanged: (val) {
-                      if (val != null) setState(() => _currentStatus = val);
-                    },
-                    activeColor: AppColors.primary,
+        RadioGroup<String>(
+          groupValue: _currentStatus,
+          onChanged: (val) {
+            if (val != null) setState(() => _currentStatus = val);
+          },
+          child: Column(
+            children: _statusOptions.map((opt) {
+              final isSelected = _currentStatus == opt;
+              return Padding(
+                padding: const EdgeInsets.only(bottom: 10),
+                child: AppCard(
+                  onTap: () => setState(() => _currentStatus = opt),
+                  color: isSelected ? AppColors.primarySurface : AppColors.card,
+                  borderRadius: 12,
+                  padding: const EdgeInsets.all(12),
+                  child: Row(
+                    children: [
+                      Radio<String>(
+                        value: opt,
+                        activeColor: AppColors.primary,
+                      ),
+                      const SizedBox(width: 8),
+                      Expanded(
+                        child: Text(opt, style: const TextStyle(fontWeight: FontWeight.w500)),
+                      ),
+                    ],
                   ),
-                  const SizedBox(width: 8),
-                  Expanded(
-                    child: Text(opt, style: const TextStyle(fontWeight: FontWeight.w500)),
-                  ),
-                ],
-              ),
-            ),
-          );
-        }).toList().animate().fadeIn(delay: 150.ms),
+                ),
+              );
+            }).toList(),
+          ),
+        ).animate().fadeIn(delay: 150.ms),
 
         const SizedBox(height: AppDimens.sp16),
         Text(
@@ -338,34 +342,38 @@ class _CareerRoadmapInputScreenState extends ConsumerState<CareerRoadmapInputScr
           style: Theme.of(context).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.bold),
         ).animate().fadeIn(delay: 200.ms),
         const SizedBox(height: 8),
-        ..._levelOptions.map((opt) {
-          final isSelected = _experienceLevel == opt;
-          return Padding(
-            padding: const EdgeInsets.only(bottom: 10),
-            child: AppCard(
-              onTap: () => setState(() => _experienceLevel = opt),
-              color: isSelected ? AppColors.primarySurface : AppColors.card,
-              borderRadius: 12,
-              padding: const EdgeInsets.all(12),
-              child: Row(
-                children: [
-                  Radio<String>(
-                    value: opt,
-                    groupValue: _experienceLevel,
-                    onChanged: (val) {
-                      if (val != null) setState(() => _experienceLevel = val);
-                    },
-                    activeColor: AppColors.primary,
+        RadioGroup<String>(
+          groupValue: _experienceLevel,
+          onChanged: (val) {
+            if (val != null) setState(() => _experienceLevel = val);
+          },
+          child: Column(
+            children: _levelOptions.map((opt) {
+              final isSelected = _experienceLevel == opt;
+              return Padding(
+                padding: const EdgeInsets.only(bottom: 10),
+                child: AppCard(
+                  onTap: () => setState(() => _experienceLevel = opt),
+                  color: isSelected ? AppColors.primarySurface : AppColors.card,
+                  borderRadius: 12,
+                  padding: const EdgeInsets.all(12),
+                  child: Row(
+                    children: [
+                      Radio<String>(
+                        value: opt,
+                        activeColor: AppColors.primary,
+                      ),
+                      const SizedBox(width: 8),
+                      Expanded(
+                        child: Text(opt, style: const TextStyle(fontWeight: FontWeight.w500)),
+                      ),
+                    ],
                   ),
-                  const SizedBox(width: 8),
-                  Expanded(
-                    child: Text(opt, style: const TextStyle(fontWeight: FontWeight.w500)),
-                  ),
-                ],
-              ),
-            ),
-          );
-        }).toList().animate().fadeIn(delay: 250.ms),
+                ),
+              );
+            }).toList(),
+          ),
+        ).animate().fadeIn(delay: 250.ms),
       ],
     );
   }
@@ -400,34 +408,38 @@ class _CareerRoadmapInputScreenState extends ConsumerState<CareerRoadmapInputScr
           style: Theme.of(context).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.bold),
         ).animate().fadeIn(delay: 150.ms),
         const SizedBox(height: 8),
-        ..._hoursOptions.map((opt) {
-          final isSelected = _studyHours == opt;
-          return Padding(
-            padding: const EdgeInsets.only(bottom: 10),
-            child: AppCard(
-              onTap: () => setState(() => _studyHours = opt),
-              color: isSelected ? AppColors.primarySurface : AppColors.card,
-              borderRadius: 12,
-              padding: const EdgeInsets.all(12),
-              child: Row(
-                children: [
-                  Radio<String>(
-                    value: opt,
-                    groupValue: _studyHours,
-                    onChanged: (val) {
-                      if (val != null) setState(() => _studyHours = val);
-                    },
-                    activeColor: AppColors.primary,
+        RadioGroup<String>(
+          groupValue: _studyHours,
+          onChanged: (val) {
+            if (val != null) setState(() => _studyHours = val);
+          },
+          child: Column(
+            children: _hoursOptions.map((opt) {
+              final isSelected = _studyHours == opt;
+              return Padding(
+                padding: const EdgeInsets.only(bottom: 10),
+                child: AppCard(
+                  onTap: () => setState(() => _studyHours = opt),
+                  color: isSelected ? AppColors.primarySurface : AppColors.card,
+                  borderRadius: 12,
+                  padding: const EdgeInsets.all(12),
+                  child: Row(
+                    children: [
+                      Radio<String>(
+                        value: opt,
+                        activeColor: AppColors.primary,
+                      ),
+                      const SizedBox(width: 8),
+                      Expanded(
+                        child: Text(opt, style: const TextStyle(fontWeight: FontWeight.w500)),
+                      ),
+                    ],
                   ),
-                  const SizedBox(width: 8),
-                  Expanded(
-                    child: Text(opt, style: const TextStyle(fontWeight: FontWeight.w500)),
-                  ),
-                ],
-              ),
-            ),
-          );
-        }).toList().animate().fadeIn(delay: 200.ms),
+                ),
+              );
+            }).toList(),
+          ),
+        ).animate().fadeIn(delay: 200.ms),
       ],
     );
   }

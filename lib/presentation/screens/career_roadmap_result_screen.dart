@@ -63,7 +63,7 @@ class CareerRoadmapResultScreen extends StatelessWidget {
             end: Alignment.bottomCenter,
             colors: [
               AppColors.background,
-              AppColors.primarySurface.withOpacity(0.3),
+              AppColors.primarySurface.withValues(alpha: 0.3),
               AppColors.background,
             ],
           ),
@@ -111,7 +111,7 @@ class CareerRoadmapResultScreen extends StatelessWidget {
                         ],
                       ),
                       const SizedBox(height: 6),
-                      Text(
+                      const Text(
                         'Target Goal Path',
                         style: TextStyle(
                           color: Colors.white70,
@@ -123,7 +123,7 @@ class CareerRoadmapResultScreen extends StatelessWidget {
                         const SizedBox(height: 12),
                         const Divider(color: Colors.white24),
                         const SizedBox(height: 8),
-                        Text(
+                        const Text(
                           'Starting Background:',
                           style: TextStyle(
                             color: Colors.white70,
@@ -251,7 +251,7 @@ class CareerRoadmapResultScreen extends StatelessWidget {
                 Expanded(
                   child: Container(
                     width: 2,
-                    color: markerColor.withOpacity(0.3),
+                    color: markerColor.withValues(alpha: 0.3),
                   ),
                 ),
             ],
@@ -281,7 +281,7 @@ class CareerRoadmapResultScreen extends StatelessWidget {
                           Container(
                             padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
                             decoration: BoxDecoration(
-                              color: markerColor.withOpacity(0.1),
+                              color: markerColor.withValues(alpha: 0.1),
                               borderRadius: BorderRadius.circular(8),
                             ),
                             child: Text(
@@ -360,10 +360,10 @@ class CareerRoadmapResultScreen extends StatelessWidget {
                             child: Container(
                               padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
                               decoration: BoxDecoration(
-                                color: AppColors.primarySurface.withOpacity(0.4),
+                                color: AppColors.primarySurface.withValues(alpha: 0.4),
                                 borderRadius: BorderRadius.circular(8),
                                 border: Border.all(
-                                  color: AppColors.primary.withOpacity(0.1),
+                                  color: AppColors.primary.withValues(alpha: 0.1),
                                 ),
                               ),
                               child: Row(

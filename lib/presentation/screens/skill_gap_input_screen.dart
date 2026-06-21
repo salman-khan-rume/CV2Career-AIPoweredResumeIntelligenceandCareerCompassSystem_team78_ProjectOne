@@ -347,51 +347,49 @@ class _SkillGapInputScreenState extends ConsumerState<SkillGapInputScreen> with 
                   ),
                   const SizedBox(height: AppDimens.sp12),
                   AppCard(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        if (hasSavedCV) ...[
-                          RadioListTile<bool>(
-                            value: true,
-                            groupValue: _useSavedCV,
-                            onChanged: (val) {
-                              if (val != null) setState(() => _useSavedCV = val);
-                            },
-                            title: const Text('Use Saved Primary CV'),
-                            subtitle: Text(
-                              profile?.primaryCvName ?? '',
-                              style: const TextStyle(fontWeight: FontWeight.w500),
+                    child: RadioGroup<bool>(
+                      groupValue: _useSavedCV,
+                      onChanged: (val) {
+                        if (val != null) setState(() => _useSavedCV = val);
+                      },
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          if (hasSavedCV) ...[
+                            RadioListTile<bool>(
+                              value: true,
+                              title: const Text('Use Saved Primary CV'),
+                              subtitle: Text(
+                                profile?.primaryCvName ?? '',
+                                style: const TextStyle(fontWeight: FontWeight.w500),
+                              ),
+                              contentPadding: EdgeInsets.zero,
+                              activeColor: AppColors.primary,
                             ),
+                            const Divider(height: 1),
+                          ],
+                          RadioListTile<bool>(
+                            value: false,
+                            title: const Text('Upload a different CV'),
+                            subtitle: _newCvFile != null
+                                ? Text(_newCvFile!.name, style: TextStyle(color: AppColors.success))
+                                : const Text('PDF, DOCX, or TXT (Max 5MB)'),
                             contentPadding: EdgeInsets.zero,
                             activeColor: AppColors.primary,
                           ),
-                          const Divider(height: 1),
-                        ],
-                        RadioListTile<bool>(
-                          value: false,
-                          groupValue: _useSavedCV,
-                          onChanged: (val) {
-                            if (val != null) setState(() => _useSavedCV = val);
-                          },
-                          title: const Text('Upload a different CV'),
-                          subtitle: _newCvFile != null
-                              ? Text(_newCvFile!.name, style: TextStyle(color: AppColors.success))
-                              : const Text('PDF, DOCX, or TXT (Max 5MB)'),
-                          contentPadding: EdgeInsets.zero,
-                          activeColor: AppColors.primary,
-                        ),
-                        if (!_useSavedCV) ...[
-                          const SizedBox(height: 8),
-                          SizedBox(
-                            width: double.infinity,
-                            child: OutlinedButton.icon(
-                              onPressed: _pickNewCV,
-                              icon: const Icon(Icons.upload_file),
-                              label: Text(_newCvFile != null ? 'Change CV File' : 'Pick CV File'),
+                          if (!_useSavedCV) ...[
+                            const SizedBox(height: 8),
+                            SizedBox(
+                              width: double.infinity,
+                              child: OutlinedButton.icon(
+                                onPressed: _pickNewCV,
+                                icon: const Icon(Icons.upload_file),
+                                label: Text(_newCvFile != null ? 'Change CV File' : 'Pick CV File'),
+                              ),
                             ),
-                          ),
+                          ],
                         ],
-                      ],
+                      ),
                     ),
                   ),
                   const SizedBox(height: AppDimens.sp24),
@@ -489,9 +487,9 @@ class _SkillGapInputScreenState extends ConsumerState<SkillGapInputScreen> with 
                                     Container(
                                       padding: const EdgeInsets.all(10),
                                       decoration: BoxDecoration(
-                                        color: AppColors.warning.withOpacity(0.08),
+                                        color: AppColors.warning.withValues(alpha: 0.08),
                                         borderRadius: BorderRadius.circular(8),
-                                        border: Border.all(color: AppColors.warning.withOpacity(0.3)),
+                                        border: Border.all(color: AppColors.warning.withValues(alpha: 0.3)),
                                       ),
                                       child: Row(
                                         crossAxisAlignment: CrossAxisAlignment.start,

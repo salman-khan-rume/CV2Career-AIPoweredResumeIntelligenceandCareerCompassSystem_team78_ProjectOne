@@ -120,7 +120,7 @@ class AppStrings {
   static const String historyTitle = 'Analysis History';
   static const String historyEmpty = 'No saved analyses yet.';
   static const String scoreTrend = 'Score Trend';
-  static const String guestNoHistory = 'Sign in to view your analysis history.';
+  static const String guestNoHistory = 'Sign in to view your history and track your progress.';
 
   // Profile
   static const String profileTitle = 'Profile';

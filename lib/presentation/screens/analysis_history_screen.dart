@@ -30,7 +30,7 @@ class AnalysisHistoryScreen extends ConsumerWidget {
         appBar: AppBar(title: const Text(AppStrings.historyTitle)),
         body: EmptyStateWidget(
           message: AppStrings.guestNoHistory,
-          icon: Icons.lock_outline,
+          icon: Icons.person_outline,
           action: ElevatedButton(
             onPressed: () => context.push(AppRoutes.login),
             child: const Text(AppStrings.signInNow),

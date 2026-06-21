@@ -75,11 +75,6 @@ final routerProvider = Provider<GoRouter>((ref) {
         return AppRoutes.welcome;
       }
 
-      // Only /history requires login (guests not allowed)
-      final isHistory = state.matchedLocation == AppRoutes.history;
-      if (isHistory && !isLoggedIn) {
-        return AppRoutes.welcome;
-      }
       return null;
     },
     routes: [
