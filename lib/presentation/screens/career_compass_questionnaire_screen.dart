@@ -32,6 +32,20 @@ class _CareerCompassQuestionnaireScreenState
   );
 
   @override
+  void initState() {
+    super.initState();
+    // Listen to text changes on all controllers to update the validation state in real-time.
+    for (int i = 0; i < compassQuestions.length; i++) {
+      _controllers[i].addListener(() {
+        if (mounted) {
+          final text = _controllers[i].text;
+          ref.read(compassAnswerProvider.notifier).setAnswer(compassQuestions[i].id, text);
+        }
+      });
+    }
+  }
+
+  @override
   void dispose() {
     _pageController.dispose();
     for (final c in _controllers) {
@@ -74,7 +88,7 @@ class _CareerCompassQuestionnaireScreenState
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text(
-            'Please answer at least 12 questions (${answers.answeredCount} answered so far).',
+            'Please provide at least 12 valid answers (${answers.answeredCount} valid so far). Each answer must be a detailed sentence (at least 10 characters, not gibberish).',
           ),
           backgroundColor: AppColors.warning,
         ),
@@ -192,7 +206,7 @@ class _ProgressHeader extends StatelessWidget {
                 style: Theme.of(context).textTheme.bodySmall,
               ),
               Text(
-                '$answered answered',
+                '$answered valid answers',
                 style: Theme.of(context).textTheme.bodySmall?.copyWith(
                       color: answered >= 12
                           ? AppColors.success
@@ -285,7 +299,51 @@ class _QuestionPage extends StatelessWidget {
             ),
           ).animate().fadeIn(delay: 150.ms),
 
-          const SizedBox(height: AppDimens.sp16),
+          const SizedBox(height: 6),
+
+          // Real-time input validation feedback
+          if (controller.text.isNotEmpty && !CompassAnswerState.isValidAnswer(controller.text))
+            Padding(
+              padding: const EdgeInsets.only(bottom: 12),
+              child: Row(
+                children: [
+                  Icon(Icons.warning_amber_rounded, size: 14, color: AppColors.warning),
+                  const SizedBox(width: 6),
+                  Expanded(
+                    child: Text(
+                      'Please provide a detailed, meaningful answer (at least 10 characters, no gibberish).',
+                      style: TextStyle(
+                        color: AppColors.warning,
+                        fontSize: 12,
+                        fontWeight: FontWeight.w500,
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            )
+          else if (controller.text.isNotEmpty && CompassAnswerState.isValidAnswer(controller.text))
+            Padding(
+              padding: const EdgeInsets.only(bottom: 12),
+              child: Row(
+                children: [
+                  Icon(Icons.check_circle_outline_rounded, size: 14, color: AppColors.success),
+                  const SizedBox(width: 6),
+                  Expanded(
+                    child: Text(
+                      'Valid answer!',
+                      style: TextStyle(
+                        color: AppColors.success,
+                        fontSize: 12,
+                        fontWeight: FontWeight.w500,
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+
+          const SizedBox(height: AppDimens.sp12),
 
           // Tip card
           AppCard(

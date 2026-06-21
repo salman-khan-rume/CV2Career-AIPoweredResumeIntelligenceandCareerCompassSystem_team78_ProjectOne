@@ -26,7 +26,9 @@ import '../screens/analysis_history_screen.dart';
 import '../screens/profile_screen.dart';
 import '../screens/confirm_email_screen.dart';
 import '../screens/welcome_user_screen.dart';
+import '../screens/reset_password_screen.dart';
 import '../widgets/main_shell.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
 
 // GoRouter provider - watches auth state to redirect unauthenticated users.
 final routerProvider = Provider<GoRouter>((ref) {
@@ -37,7 +39,16 @@ final routerProvider = Provider<GoRouter>((ref) {
     refreshListenable: RouterRefreshNotifier(ref),
     redirect: (context, state) {
       final isLoggedIn = authState.value?.session != null;
+      final authEvent = authState.value?.event;
       final isGuestMode = ref.read(guestModeProvider);
+
+      // 1. If in password recovery mode, force reset password route
+      if (authEvent == AuthChangeEvent.passwordRecovery) {
+        if (state.matchedLocation != AppRoutes.resetPassword) {
+          return AppRoutes.resetPassword;
+        }
+        return null;
+      }
 
       // List of public routes that don't require any login/guest mode checks
       final isPublicRoute = state.matchedLocation == AppRoutes.welcome ||
@@ -48,6 +59,18 @@ final routerProvider = Provider<GoRouter>((ref) {
           state.matchedLocation == AppRoutes.onboarding ||
           state.matchedLocation == AppRoutes.confirmEmail;
 
+      // 2. If logged in, prevent accessing public auth routes
+      if (isLoggedIn) {
+        final isAuthRoute = state.matchedLocation == AppRoutes.welcome ||
+            state.matchedLocation == AppRoutes.login ||
+            state.matchedLocation == AppRoutes.register ||
+            state.matchedLocation == AppRoutes.forgotPassword;
+        if (isAuthRoute) {
+          return AppRoutes.home;
+        }
+      }
+
+      // 3. If not logged in and not in guest mode, force welcome page (unless accessing public route)
       if (!isLoggedIn && !isGuestMode && !isPublicRoute) {
         return AppRoutes.welcome;
       }
@@ -94,6 +117,12 @@ final routerProvider = Provider<GoRouter>((ref) {
       GoRoute(
         path: AppRoutes.forgotPassword,
         builder: (context, state) => const ForgotPasswordScreen(),
+      ),
+
+      // Reset Password
+      GoRoute(
+        path: AppRoutes.resetPassword,
+        builder: (context, state) => const ResetPasswordScreen(),
       ),
 
       // Confirm Email

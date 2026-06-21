@@ -24,4 +24,5 @@ class AppRoutes {
   static const String profile = '/profile';
   static const String confirmEmail = '/confirm-email';
   static const String welcomeUser = '/welcome-user';
+  static const String resetPassword = '/reset-password';
 }

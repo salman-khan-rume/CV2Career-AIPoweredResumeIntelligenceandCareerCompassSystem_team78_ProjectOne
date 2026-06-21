@@ -43,15 +43,6 @@ class ProfileScreen extends ConsumerWidget {
     return Scaffold(
       appBar: AppBar(
         title: const Text(AppStrings.profileTitle),
-        actions: [
-          // Logout icon in AppBar
-          IconButton(
-            icon: const Icon(Icons.logout),
-            color: AppColors.danger,
-            onPressed: () => _confirmSignOut(context, ref),
-            tooltip: AppStrings.signOut,
-          ),
-        ],
       ),
       body: Container(
         decoration: BoxDecoration(
@@ -196,33 +187,6 @@ class ProfileScreen extends ConsumerWidget {
     );
   }
 
-  void _confirmSignOut(BuildContext context, WidgetRef ref) {
-    showDialog(
-      context: context,
-      builder: (dialogContext) => AlertDialog(
-        title: const Text(AppStrings.signOut),
-        content: const Text(AppStrings.signOutConfirm),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.of(dialogContext).pop(),
-            child: const Text(AppStrings.cancel),
-          ),
-          TextButton(
-            onPressed: () async {
-              Navigator.of(dialogContext).pop();
-              ref.read(guestModeProvider.notifier).setGuest(false);
-              await ref.read(authNotifierProvider.notifier).signOut();
-              if (context.mounted) context.go(AppRoutes.welcome);
-            },
-            child: Text(
-              AppStrings.confirm,
-              style: TextStyle(color: AppColors.danger),
-            ),
-          ),
-        ],
-      ),
-    );
-  }
 }
 
 // Circular avatar + user name and email, with edit button.
@@ -469,23 +433,23 @@ class _MenuItem {
       {required this.icon, required this.label, required this.onTap});
 }
 
-// Sign out button with confirmation dialog.
 class _SignOutButton extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    return ElevatedButton.icon(
+    return OutlinedButton.icon(
       onPressed: () => _confirmSignOut(context, ref),
-      icon: const Icon(Icons.logout),
-      label: const Text(
+      icon: Icon(Icons.logout, color: AppColors.danger, size: 20),
+      label: Text(
         AppStrings.signOut,
-      ),
-      style: ElevatedButton.styleFrom(
-        backgroundColor: AppColors.danger,
-        foregroundColor: AppColors.textOnPrimary,
-        minimumSize: const Size(double.infinity, 48),
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(AppDimens.radiusButton),
+        style: TextStyle(
+          color: AppColors.danger,
+          fontWeight: FontWeight.w600,
         ),
+      ),
+      style: OutlinedButton.styleFrom(
+        side: BorderSide(color: AppColors.danger.withOpacity(0.4), width: 1.5),
+        minimumSize: const Size(double.infinity, 48),
+        shape: const StadiumBorder(),
       ),
     );
   }

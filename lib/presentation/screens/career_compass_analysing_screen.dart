@@ -86,7 +86,6 @@ class _AnalysingView extends StatelessWidget {
   Widget build(BuildContext context) {
     const steps = [
       'Reading your career preferences...',
-      'Matching against 8 career domains...',
       'Calculating acceptance probabilities...',
       'Generating your personalised roadmap...',
     ];

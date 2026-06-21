@@ -7,7 +7,7 @@ class AppConstants {
       'sb_publishable_VX5ddQOVyCmhAop2yg1q3g_yv6_V6XT';
 
   // Groq - Loaded from environment
-  static const String groqApiKey = String.fromEnvironment('GROQ_API_KEY');
+  static String groqApiKey = const String.fromEnvironment('GROQ_API_KEY');
 
   // File limits
   static const int maxFileSizeBytes = 5 * 1024 * 1024;

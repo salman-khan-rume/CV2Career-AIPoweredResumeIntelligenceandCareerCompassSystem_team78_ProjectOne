@@ -90,6 +90,13 @@ class AuthNotifier extends Notifier<AsyncValue<void>> {
         () => ref.read(supabaseServiceProvider).sendPasswordReset(email));
   }
 
+  // Updates user's password.
+  Future<void> updatePassword(String newPassword) async {
+    state = const AsyncValue.loading();
+    state = await AsyncValue.guard(
+        () => ref.read(supabaseServiceProvider).updatePassword(newPassword));
+  }
+
   // Signs out the current user.
   Future<void> signOut() async {
     state = const AsyncValue.loading();

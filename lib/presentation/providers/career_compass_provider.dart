@@ -149,9 +149,46 @@ class CompassAnswerState {
     return CompassAnswerState(answers: {...answers, questionId: answer});
   }
 
+  static bool isValidAnswer(String text) {
+    final trimmed = text.trim();
+    if (trimmed.length < 10) return false;
+
+    // Split by whitespace to check word count
+    final words = trimmed.split(RegExp(r'\s+')).where((w) => w.isNotEmpty).toList();
+    if (words.length < 2) return false;
+
+    // Check unique character count (variety)
+    final letters = trimmed.toLowerCase().replaceAll(RegExp(r'[^a-z]'), '');
+    final uniqueLetters = letters.split('').toSet();
+    if (uniqueLetters.length < 4) return false;
+
+    // Vowel count check
+    final vowelRegex = RegExp(r'[aeiouy]');
+    if (!vowelRegex.hasMatch(letters)) return false;
+
+    // Keyboard mash patterns
+    final lower = trimmed.toLowerCase();
+    final mashPatterns = [
+      'asdf', 'sdfg', 'dfgh', 'fghj', 'ghjk', 'hjkl',
+      'qwer', 'wert', 'erty', 'rtyu', 'tyui', 'yuio', 'uiop',
+      'zxcv', 'xcvb', 'cvbn', 'vbnm'
+    ];
+    for (final pattern in mashPatterns) {
+      if (lower.contains(pattern)) return false;
+    }
+
+    // Repeated words check
+    if (words.length >= 3) {
+      final uniqueWords = words.map((w) => w.toLowerCase()).toSet();
+      if (uniqueWords.length == 1) return false;
+    }
+
+    return true;
+  }
+
   bool isAnswered(String questionId) {
     final a = answers[questionId] ?? '';
-    return a.trim().length >= 5;
+    return isValidAnswer(a);
   }
 
   int get answeredCount =>
