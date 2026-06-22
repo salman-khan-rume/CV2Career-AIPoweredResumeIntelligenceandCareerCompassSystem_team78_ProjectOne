@@ -6,6 +6,7 @@ import '../../data/models/analysis_result.dart';
 import '../../data/services/ai_service.dart';
 import '../../data/services/pdf_service.dart';
 import 'auth_provider.dart';
+import 'history_provider.dart';
 
 final aiServiceProvider = Provider<AiService>((ref) => AiService.instance);
 final pdfServiceProvider = Provider<PdfService>((ref) => PdfService.instance);
@@ -166,6 +167,8 @@ class ResumeAnalysisNotifier extends Notifier<ResumeAnalysisState> {
               analysisData['missing_keywords'] as List? ?? []),
           suggestions: suggestions,
         );
+
+        ref.read(analysisHistoryRefreshTrigger.notifier).refresh();
       }
 
       final result = AnalysisResult(

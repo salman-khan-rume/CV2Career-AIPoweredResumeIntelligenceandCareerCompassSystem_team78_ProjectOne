@@ -14,6 +14,7 @@ import '../widgets/app_card.dart';
 import '../widgets/score_circle.dart';
 import '../widgets/loading_error_widgets.dart';
 import 'package:url_launcher/url_launcher.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
 // Screen 7 (logged-in) + Screen 8 (guest).
 // Detected at runtime via isGuestProvider.
@@ -779,7 +780,7 @@ void _showDevelopersSheet(BuildContext context) {
             email: 'parvinjuhi387@gmail.com',
             initials: 'RP',
             linkedinUrl: null,
-            githubUrl: null,
+            githubUrl: 'https://github.com/Juhi-397',
           ),
           const SizedBox(height: 12),
         ],
@@ -966,7 +967,9 @@ Widget _buildDevItemCard(
               const SizedBox(height: 2),
               Text(
                 email,
-                style: TextStyle(color: AppColors.textSecondary, fontSize: 11),
+                style: TextStyle(color: AppColors.textSecondary, fontSize: 10),
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
               ),
             ],
           ),
@@ -975,32 +978,46 @@ Widget _buildDevItemCard(
           mainAxisSize: MainAxisSize.min,
           children: [
             IconButton(
-              icon: const Icon(Icons.email_outlined, size: 18),
+              icon: const FaIcon(FontAwesomeIcons.envelope, size: 18),
               onPressed: () => sendEmailHelper(email),
               color: AppColors.primary,
               padding: EdgeInsets.zero,
               constraints: const BoxConstraints(),
             ),
-            if (linkedinUrl != null) ...[
-              const SizedBox(width: 10),
-              IconButton(
-                icon: const Icon(Icons.link_rounded, size: 18),
-                onPressed: () => launchHelper(linkedinUrl),
-                color: const Color(0xFF0077B5),
-                padding: EdgeInsets.zero,
-                constraints: const BoxConstraints(),
-              ),
-            ],
-            if (githubUrl != null) ...[
-              const SizedBox(width: 10),
-              IconButton(
-                icon: const Icon(Icons.code_rounded, size: 18),
-                onPressed: () => launchHelper(githubUrl),
-                color: AppColors.textPrimary,
-                padding: EdgeInsets.zero,
-                constraints: const BoxConstraints(),
-              ),
-            ],
+            const SizedBox(width: 10),
+            linkedinUrl != null
+                ? IconButton(
+                    icon: const FaIcon(FontAwesomeIcons.linkedin, size: 18),
+                    onPressed: () => launchHelper(linkedinUrl),
+                    color: const Color(0xFF0077B5),
+                    padding: EdgeInsets.zero,
+                    constraints: const BoxConstraints(),
+                  )
+                : Tooltip(
+                    message: 'LinkedIn account not available',
+                    child: FaIcon(
+                      FontAwesomeIcons.linkedin,
+                      size: 18,
+                      color: Colors.grey.shade400,
+                    ),
+                  ),
+            const SizedBox(width: 10),
+            githubUrl != null
+                ? IconButton(
+                    icon: const FaIcon(FontAwesomeIcons.github, size: 18),
+                    onPressed: () => launchHelper(githubUrl),
+                    color: AppColors.textPrimary,
+                    padding: EdgeInsets.zero,
+                    constraints: const BoxConstraints(),
+                  )
+                : Tooltip(
+                    message: 'GitHub account not available',
+                    child: FaIcon(
+                      FontAwesomeIcons.github,
+                      size: 18,
+                      color: Colors.grey.shade400,
+                    ),
+                  ),
           ],
         ),
       ],
