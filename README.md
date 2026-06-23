@@ -8,6 +8,11 @@
 
 **CV2Career** is a modern, premium Flutter-based mobile and web application designed to bridge the gap between job seekers' resumes and their career goals. Leveraging state-of-the-art AI analysis (via the LLaMA 3.3 model on Groq) and a robust Supabase backend, the app parses resume files (PDF, DOCX, TXT), evaluates resume formatting & keyword targeting (ATS Score), and maps a personalized path forward through career matchmaking, skill-gap analysis, and actionable learning roadmaps.
 
+> [!IMPORTANT]
+> **Looking for the step-by-step application user manual?**
+> We have created a comprehensive, visual guide covering all 4 major features and necessary steps to get the most out of the application.
+> Read the [CV2Career User Guide](file:///c:/Users/Salman%20Khan%20Rume/cv2career/USER_GUIDE.md).
+
 ---
 
 ## 🌟 Key Features
