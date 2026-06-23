@@ -755,8 +755,6 @@ void _showDevelopersSheet(BuildContext context) {
             id: '0182320012101384',
             email: 'salmankhanrume62@gmail.com',
             initials: 'SK',
-            linkedinUrl: 'https://www.linkedin.com/in/salman-rume/',
-            githubUrl: 'https://github.com/salman-khan-rume',
           ),
           const SizedBox(height: 12),
 
@@ -767,8 +765,6 @@ void _showDevelopersSheet(BuildContext context) {
             id: '0182320012101347',
             email: 'tasmiahaqueofficial@gmail.com',
             initials: 'TH',
-            linkedinUrl: 'https://www.linkedin.com/in/tasmia-haque-diya/',
-            githubUrl: 'https://github.com/tasmiahaque08',
           ),
           const SizedBox(height: 12),
 
@@ -779,8 +775,6 @@ void _showDevelopersSheet(BuildContext context) {
             id: '0182320012101397',
             email: 'parvinjuhi387@gmail.com',
             initials: 'RP',
-            linkedinUrl: null,
-            githubUrl: 'https://github.com/Juhi-397',
           ),
           const SizedBox(height: 12),
         ],
@@ -897,18 +891,7 @@ Widget _buildDevItemCard(
   required String id,
   required String email,
   required String initials,
-  String? linkedinUrl,
-  String? githubUrl,
 }) {
-  Future<void> launchHelper(String urlString) async {
-    final Uri url = Uri.parse(urlString);
-    try {
-      if (!await launchUrl(url, mode: LaunchMode.externalApplication)) {
-        throw Exception('Could not launch $url');
-      }
-    } catch (_) {}
-  }
-
   Future<void> sendEmailHelper(String email) async {
     final Uri emailLaunchUri = Uri(
       scheme: 'mailto',
@@ -974,51 +957,12 @@ Widget _buildDevItemCard(
             ],
           ),
         ),
-        Row(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            IconButton(
-              icon: const FaIcon(FontAwesomeIcons.envelope, size: 18),
-              onPressed: () => sendEmailHelper(email),
-              color: AppColors.primary,
-              padding: EdgeInsets.zero,
-              constraints: const BoxConstraints(),
-            ),
-            const SizedBox(width: 10),
-            linkedinUrl != null
-                ? IconButton(
-                    icon: const FaIcon(FontAwesomeIcons.linkedin, size: 18),
-                    onPressed: () => launchHelper(linkedinUrl),
-                    color: const Color(0xFF0077B5),
-                    padding: EdgeInsets.zero,
-                    constraints: const BoxConstraints(),
-                  )
-                : Tooltip(
-                    message: 'LinkedIn account not available',
-                    child: FaIcon(
-                      FontAwesomeIcons.linkedin,
-                      size: 18,
-                      color: Colors.grey.shade400,
-                    ),
-                  ),
-            const SizedBox(width: 10),
-            githubUrl != null
-                ? IconButton(
-                    icon: const FaIcon(FontAwesomeIcons.github, size: 18),
-                    onPressed: () => launchHelper(githubUrl),
-                    color: AppColors.textPrimary,
-                    padding: EdgeInsets.zero,
-                    constraints: const BoxConstraints(),
-                  )
-                : Tooltip(
-                    message: 'GitHub account not available',
-                    child: FaIcon(
-                      FontAwesomeIcons.github,
-                      size: 18,
-                      color: Colors.grey.shade400,
-                    ),
-                  ),
-          ],
+        IconButton(
+          icon: const FaIcon(FontAwesomeIcons.envelope, size: 18),
+          onPressed: () => sendEmailHelper(email),
+          color: AppColors.primary,
+          padding: EdgeInsets.zero,
+          constraints: const BoxConstraints(),
         ),
       ],
     ),
